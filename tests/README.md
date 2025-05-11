@@ -38,6 +38,20 @@ To test the collection listener functionality specifically:
    npm run test:collection
    ```
 
+### Document Listener Tests
+
+To test the document listener functionality specifically:
+
+1. Start the Firebase emulator:
+   ```
+   npm run emulator:start
+   ```
+
+2. In a separate terminal, run the document listener test:
+   ```
+   npm run test:document
+   ```
+
 ### Manual Testing with Emulator
 
 For manual testing with the Firebase emulator:
@@ -73,6 +87,18 @@ This file tests the functionality of the Firestore collection listener. It verif
 - Event type filtering (added, modified, removed)
 - Query filters
 - Resource cleanup
+
+### DocumentListener.test.ts
+
+This file tests the functionality of the Firestore document listener. It verifies:
+
+- Node initialization with correct parameters for document listeners
+- Document change detection and proper data emission
+- Handling of document deletions
+- Handling of metadata changes
+- Error handling within the document listener
+- Resource cleanup
+- Support for custom database IDs
 
 ### Mocks
 

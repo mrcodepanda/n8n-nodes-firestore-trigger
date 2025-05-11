@@ -41,7 +41,8 @@
     "emulator:seed": "cd tests/emulator && node seed-data.js",
     "emulator:test": "cd tests/emulator && node test-with-emulator.js",
     "emulator:simulate": "cd tests/emulator && node simulate-changes.js",
-    "test:collection": "./tests/run-collection-test.sh"
+    "test:collection": "./tests/run-collection-test.sh",
+    "test:document": "./tests/run-document-test.sh"
   },
   "files": [
     "dist"

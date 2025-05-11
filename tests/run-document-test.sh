@@ -3,7 +3,7 @@
 # Ensure the script fails if any command fails
 set -e
 
-echo "==== Starting Firestore Collection Listener Test ===="
+echo "==== Starting Firestore Document Listener Test ===="
 
 # Check if emulator is already running
 if ! curl -s "http://localhost:8001/" > /dev/null; then
@@ -29,8 +29,8 @@ cd "$(dirname "$0")/.."
 pnpm build
 
 # Run the test
-echo "Running collection listener test..."
-node tests/emulator/test-collection-listener.js
+echo "Running document listener test..."
+node tests/emulator/test-document-listener.js
 TEST_RESULT=$?
 
 # Clean up
@@ -39,5 +39,5 @@ if [ "$STARTED_EMULATOR" = true ]; then
   kill $EMULATOR_PID
 fi
 
-echo "==== Collection Listener Test Completed ===="
+echo "==== Document Listener Test Completed ===="
 exit $TEST_RESULT

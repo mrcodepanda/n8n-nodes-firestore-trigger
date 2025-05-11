@@ -24,11 +24,11 @@ Follow these steps to install this node for use in your n8n instance:
 
 ```bash
 # Install from npm
-npm install n8n-nodes-firestore-trigger
+pnpm add n8n-nodes-firestore-trigger
 
 # Alternatively, for local development:
 cd ~/.n8n/custom/
-npm link /path/to/n8n-nodes-firestore-trigger
+pnpm link /path/to/n8n-nodes-firestore-trigger
 ```
 
 Restart n8n after installation.
@@ -659,16 +659,16 @@ For integration testing, use the Firebase Emulator:
 
 1. Build the package:
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 2. Link to n8n:
    ```bash
    cd /home/saggarwal/projects/n8n-firestore-trigger
-   npm link
+   pnpm link --global
    
    cd ~/.n8n/custom
-   npm link n8n-nodes-firestore-trigger
+   pnpm link --global n8n-nodes-firestore-trigger
    ```
 
 3. Test in n8n by:

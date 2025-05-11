@@ -1,13 +1,10 @@
-import {
-	ICredentialType,
-	INodeProperties,
-} from 'n8n-workflow';
+import { ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class FirebaseAdminApi implements ICredentialType {
 	name = 'firebaseAdminApi';
 	displayName = 'Firebase Admin API';
 	documentationUrl = 'https://firebase.google.com/docs/admin/setup';
-	
+
 	properties: INodeProperties[] = [
 		{
 			displayName: 'Authentication Method',
@@ -36,9 +33,7 @@ export class FirebaseAdminApi implements ICredentialType {
 			required: true,
 			displayOptions: {
 				show: {
-					authenticationMethod: [
-						'serviceAccount',
-					],
+					authenticationMethod: ['serviceAccount'],
 				},
 			},
 			description: 'The service account key JSON object or file content',
