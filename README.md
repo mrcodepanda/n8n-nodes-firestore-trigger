@@ -8,9 +8,12 @@ This package provides an n8n node that enables real-time Firebase Firestore trig
 
 - **Real-time Firestore Triggers**: Listen for changes in Firestore and automatically execute workflows
 - **Document & Collection Monitoring**: Monitor specific documents or entire collections
+- **Dynamic Subcollection Support**: Listen to nested subcollections using path patterns (e.g., "users/:userId/orders")
+- **Path Pattern Matching**: Use colon syntax to create dynamic listeners that respond to multiple documents
 - **Event Filtering**: Choose which events to listen for (added, modified, or removed)
 - **Query Support**: Apply filters to listen only for specific document changes
 - **Metadata Support**: Optionally include metadata changes in your triggers
+- **n8n Expression Support**: Use dynamic expressions in path segments for flexible data access
 
 ## Requirements
 
@@ -51,7 +54,7 @@ The Firestore Trigger node provides several configuration options:
 | Parameter | Description |
 |-----------|-------------|
 | Operation | Choose between "Listen to Collection" or "Listen to Document" |
-| Collection | The Firestore collection to monitor |
+| Collection Path | The Firestore collection path to monitor (supports path patterns like "users/:userId/orders") |
 | Document ID | (For document listening) The specific document ID to monitor |
 | Events | (For collection listening) Events to trigger on: Added, Modified, Removed |
 | Query Filters | Add filters to limit which document changes trigger the workflow |
@@ -85,11 +88,47 @@ To only trigger on documents that match specific criteria:
 
 1. Add the Firestore Trigger node to your workflow
 2. Select "Listen to Collection" operation
-3. Enter "products" as the collection name
+3. Enter "products" as the collection path
 4. Under "Options" > "Query Filters", add a filter:
    - Field: "status"
    - Operator: "=="
    - Value: "published"
+5. Save and activate the workflow
+
+### Monitor a Subcollection
+
+To listen for changes in a subcollection:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Collection" operation
+3. Enter "users/:userId/orders" as the collection path
+   - This will monitor the "orders" subcollection under any document in the "users" collection
+   - The `:userId` parameter creates a dynamic listener that responds to any matching document
+4. Select desired events (Added, Modified, Removed)
+5. Save and activate the workflow
+
+### Use Dynamic References with Expressions
+
+To dynamically monitor subcollections based on data from previous nodes:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Collection" operation
+3. Enter a collection path with expressions: `users/{{$node["GetUserInfo"].data["userId"]}}/orders`
+   - This uses the output from a previous node named "GetUserInfo" to dynamically set the user ID
+4. Select desired events
+5. Save and activate the workflow
+
+### Use Path Pattern Matching
+
+To create dynamic listeners for multiple documents matching a pattern:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Collection" operation
+3. Enter "chats/:chatId/messages" as the collection path
+   - This creates listeners for the "messages" subcollection in any document in the "chats" collection
+   - If a new chat document is created, a listener for its messages is automatically created
+   - If a chat document is deleted, its corresponding listener is automatically removed
+4. Select desired events
 5. Save and activate the workflow
 
 ## Output Data

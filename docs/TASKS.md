@@ -48,6 +48,7 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 | ✅ | Add query filter support for collection listeners | | | May 11, 2025 |
 | ✅ | Implement proper event filtering (added, modified, removed) | | | May 11, 2025 |
 | ✅ | Create error handling and reconnection logic | Basic error handling implemented | | May 11, 2025 |
+| 🔄 | Add subcollection support | Implementing path parsing and dynamic reference resolution | | |
 
 ### Phase 4: Testing
 
@@ -88,6 +89,21 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 ## Optional Performance Optimization Tasks
 
 These are optional optimizations that can be implemented after the core functionality is working.
+
+### Subcollection Support
+
+| Status | Task | Notes | Priority | Completion Date |
+|--------|------|-------|----------|----------------|
+| 🔄 | Update UI parameter from "Collection" to "Collection Path" | Change field to support paths like "collection_1/:user_id/subcol_1" | High | |
+| 🔄 | Add path format guidance for users | Add notice parameter with examples and explanation for path patterns | High | |
+| 🔄 | Implement collection path parsing function | Create utility to handle paths with dynamic segments and subcollections | High | |
+| 🔄 | Support path patterns with colon parameters | Handle paths like "collection/:param/subcollection" as dynamic listener templates | High | |
+| 🔄 | Create dynamic listener management system | Implement listener creation/removal for each document that matches the pattern | High | |
+| 🔄 | Update collection/document listener logic | Modify to use new path parsing utility functions | High | |
+| 🔄 | Add support for n8n expressions in path segments | Ensure compatibility with `{{$node["NodeName"].data["field"]}}` expressions | High | |
+| ⏱️ | Write tests for subcollection path parsing | Create unit tests for path validation and reference creation | High | |
+| ⏱️ | Create example workflows using subcollections | Document examples showing subcollection usage | Medium | |
+| ⏱️ | Update README with subcollection usage information | Add examples and updated parameter descriptions | Medium | |
 
 ### Reconnection Strategy
 
@@ -198,6 +214,9 @@ For tasks that are blocked:
   * Core collection and document listener test scripts are now complete and passing
 
 * Next priority tasks:
+  * Implement subcollection support to handle nested collection paths
+  * Update UI to better support subcollection paths
+  * Create path parsing utilities for collection and document references
   * Complete package linking for local n8n instance testing
   * Test with a real Firebase instance
   * Begin documentation for node UI descriptions
@@ -205,8 +224,35 @@ For tasks that are blocked:
 ### Week 2 (Planned Starting Date: May 18, 2025)
 
 * Planned tasks:
+  * Implement subcollection support - highest priority for Week 2
   * Complete all remaining testing tasks
   * Start documenting the node UI descriptions
   * Implement connection status indicators
   * Test edge cases (large documents, high frequency changes)
   * Prepare for final code review and npm publishing
+
+### Current Update (May 11, 2025)
+
+* New feature planning:
+  * Identified critical need for subcollection support
+  * Designed implementation plan for handling nested collection paths
+  * Added tasks to support arbitrary nesting depth for Firestore collections
+  * Created detailed task breakdown for subcollection support implementation
+  * Updated documentation to include subcollection feature plans
+  * Added examples for subcollection usage in README
+  * Decided to implement colon-based path pattern matching (like "collection/:param/subcollection")
+  * Will create dynamic listener system that responds to document changes matching path patterns
+
+* Implementation strategy:
+  * Will replace simple "Collection" parameter with more robust "Collection Path"
+  * Adding path parsing utilities to handle paths with colon parameters like "collection_1/:user_id/subcol_1"
+  * Creating a dynamic listener system that creates/removes listeners for matching documents
+  * Supporting both static paths and dynamic path patterns with colon syntax
+  * Ensuring validation to prevent invalid path formats
+  * Supporting n8n expressions alongside colon pattern syntax
+  * Estimated work: 5-8 hours for complete implementation
+
+* Next immediate actions:
+  * Begin implementation of path parsing utilities in GenericFunctions.ts
+  * Update UI parameters to support subcollection paths
+  * Modify listener logic to use new path parsing functions

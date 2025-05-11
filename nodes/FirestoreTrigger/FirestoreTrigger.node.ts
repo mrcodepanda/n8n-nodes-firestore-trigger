@@ -7,7 +7,15 @@ import {
 } from 'n8n-workflow';
 
 import { getFirestore } from 'firebase-admin/firestore';
-import { initFirebaseApp, cleanupFirebaseApp } from './GenericFunctions';
+import { 
+	initFirebaseApp, 
+	cleanupFirebaseApp, 
+	getCollectionRef,
+	getDocumentRef,
+	hasPathParameters,
+	validateCollectionPath,
+	cleanupAllListeners
+} from './GenericFunctions';
 
 export class FirestoreTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -53,12 +61,20 @@ export class FirestoreTrigger implements INodeType {
 				required: true,
 			},
 			{
-				displayName: 'Collection',
+				displayName: 'Collection Path',
 				name: 'collection',
 				type: 'string',
 				default: '',
 				required: true,
-				description: 'The collection to listen to',
+				description: 'The collection path to listen to (e.g., "users", "users/:userId/orders", "chats/:chatId/messages")',
+				placeholder: 'users/:userId/orders',
+			},
+			{
+				displayName: 'Path Format Guide',
+				name: 'pathFormatGuide',
+				type: 'notice',
+				default: '',
+				description: 'You can use colon parameters in paths (e.g., "collection/:param/subcollection") to create dynamic listeners that respond to any matching document. For fixed paths, use normal segments (e.g., "users/user123/orders").',
 			},
 			{
 				displayName: 'Document ID',
