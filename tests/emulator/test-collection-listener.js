@@ -7,7 +7,7 @@ const firebase = require('firebase-admin');
 const { FirestoreTrigger } = require('../../dist/nodes/FirestoreTrigger/FirestoreTrigger.node');
 
 // Configure and point to the Firebase emulator
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8001';
+process.env.FIRESTORE_EMULATOR_HOST = 'localhost:9099';
 
 // Initialize Firebase if not already initialized
 if (!firebase.apps.length) {
@@ -69,7 +69,7 @@ const mockHookFunctions = {
 
 async function simulateCollectionChanges() {
   console.log('Simulating changes to test collection...');
-  
+
   try {
     // Collection to use for testing
     const testCollection = db.collection('test-collection');
@@ -85,7 +85,7 @@ async function simulateCollectionChanges() {
 
     // Wait a moment
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // 2. Modify the document we just added (tests 'modified' event)
     console.log('Modifying document: doc-test-add...');
     await testCollection.doc('doc-test-add').update({
@@ -107,14 +107,14 @@ async function simulateCollectionChanges() {
 
     // Wait a moment
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // 4. Delete one of the documents (tests 'removed' event)
     console.log('Deleting document: doc-test-add...');
     await testCollection.doc('doc-test-add').delete();
 
     // Wait a moment
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     return true;
   } catch (error) {
     console.error('Error simulating collection changes:', error);
@@ -124,86 +124,86 @@ async function simulateCollectionChanges() {
 
 async function testCollectionListener() {
   console.log('Testing Firestore Collection Listener with emulator...');
-  
+
   let triggerNode;
   let triggerResponse;
 
   try {
     // Clear the existing data before we start
     await clearTestCollection();
-    
+
     // Initialize the node
     const firestoreTrigger = new FirestoreTrigger();
-    
+
     // Bind the mock functions to the trigger method
     const boundTrigger = firestoreTrigger.trigger.bind(mockHookFunctions);
-    
+
     console.log('Starting collection listener...');
-    
+
     // Execute the trigger to start listening
     triggerResponse = await boundTrigger();
     triggerNode = firestoreTrigger;
-    
+
     console.log('Collection listener started.');
-    
+
     // Simulate changes to the collection
     console.log('Simulating collection changes...');
     await simulateCollectionChanges();
-    
+
     // Give some time for all events to be processed
     console.log('Waiting for all events to be processed...');
     await new Promise(resolve => setTimeout(resolve, 5000));
-    
+
     // Verify the events received
     console.log('\n--- EVENT VERIFICATION ---');
     console.log(`Total events received: ${receivedEvents.length}`);
-    
+
     // Expect at least 4 events (add, modify, add, remove)
     if (receivedEvents.length >= 4) {
       console.log('✅ Received the expected number of events');
     } else {
       console.log('❌ Did not receive the expected number of events');
     }
-    
+
     // Verify we received each type of event
     const addedEvents = receivedEvents.filter(e => e.type === 'added');
     const modifiedEvents = receivedEvents.filter(e => e.type === 'modified');
     const removedEvents = receivedEvents.filter(e => e.type === 'removed');
-    
+
     console.log(`Added events: ${addedEvents.length}`);
     console.log(`Modified events: ${modifiedEvents.length}`);
     console.log(`Removed events: ${removedEvents.length}`);
-    
+
     if (addedEvents.length >= 2) console.log('✅ Received "added" events');
     else console.log('❌ Missing "added" events');
-    
+
     if (modifiedEvents.length >= 1) console.log('✅ Received "modified" events');
     else console.log('❌ Missing "modified" events');
-    
+
     if (removedEvents.length >= 1) console.log('✅ Received "removed" events');
     else console.log('❌ Missing "removed" events');
-    
+
     // Verify document content on events
     console.log('\n--- DOCUMENT CONTENT VERIFICATION ---');
-    
+
     // Check for specific documents we know we added
     const docTestAdd = addedEvents.find(e => e.docId === 'doc-test-add');
     const docTestHighValue = addedEvents.find(e => e.docId === 'doc-test-high-value');
-    
+
     if (docTestAdd) {
       console.log('✅ Correctly received "added" event for doc-test-add');
       console.log('   with value:', docTestAdd.data.value);
     } else {
       console.log('❌ Missing "added" event for doc-test-add');
     }
-    
+
     if (docTestHighValue) {
       console.log('✅ Correctly received "added" event for doc-test-high-value');
       console.log('   with value:', docTestHighValue.data.value);
     } else {
       console.log('❌ Missing "added" event for doc-test-high-value');
     }
-    
+
     // Check if we got the modification event for doc-test-add
     const modifiedDoc = modifiedEvents.find(e => e.docId === 'doc-test-add');
     if (modifiedDoc && modifiedDoc.data.value === 150) {
@@ -211,7 +211,7 @@ async function testCollectionListener() {
     } else {
       console.log('❌ Missing or incorrect "modified" event for value update');
     }
-    
+
     // Check if we got the removal event for doc-test-add
     const removedDoc = removedEvents.find(e => e.docId === 'doc-test-add');
     if (removedDoc) {
@@ -219,7 +219,7 @@ async function testCollectionListener() {
     } else {
       console.log('❌ Missing "removed" event for doc-test-add');
     }
-    
+
     return {
       success: receivedEvents.length >= 4,
       events: receivedEvents
@@ -237,7 +237,7 @@ async function testCollectionListener() {
       triggerResponse.closeFunction();
       console.log('Closed listener');
     }
-    
+
     // Clean up test collection
     await clearTestCollection();
   }
@@ -245,16 +245,16 @@ async function testCollectionListener() {
 
 async function clearTestCollection() {
   console.log('Clearing test collection...');
-  
+
   try {
     const testCollection = db.collection('test-collection');
     const snapshot = await testCollection.get();
-    
+
     const batch = db.batch();
     snapshot.forEach(doc => {
       batch.delete(doc.ref);
     });
-    
+
     await batch.commit();
     console.log(`Cleared ${snapshot.size} documents from test collection`);
     return true;
@@ -269,11 +269,11 @@ if (require.main === module) {
   testCollectionListener()
     .then(result => {
       console.log('\nTest result:', result.success ? 'SUCCESS' : 'FAILURE');
-      
+
       if (!result.success && result.error) {
         console.error('Error:', result.error);
       }
-      
+
       process.exit(result.success ? 0 : 1);
     })
     .catch(error => {

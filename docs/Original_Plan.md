@@ -632,7 +632,7 @@ For integration testing, use the Firebase Emulator Suite:
    const admin = require('firebase-admin');
 
    // Point to emulator
-   process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8001';
+   process.env.FIRESTORE_EMULATOR_HOST = 'localhost:9099';
 
    async function runTest() {
      // Initialize app with test credentials

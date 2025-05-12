@@ -13,4 +13,5 @@ module.exports = {
 	moduleNameMapper: {
 		'^n8n-workflow$': '<rootDir>/node_modules/n8n-workflow',
 	},
+	modulePathIgnorePatterns: ['<rootDir>/dist/'],
 };

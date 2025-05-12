@@ -24,7 +24,7 @@ This guide explains how to use the Firebase emulator to test the n8n-firestore-t
    This script will:
    - Check if Firebase CLI is installed
    - Create a local Firebase project configuration
-   - Start the Firestore emulator on port 8001
+   - Start the Firestore emulator on port 9099
    - Start the Emulator UI on port 4000
 
 3. Once the emulator is running, open a new terminal window and seed it with test data:
@@ -77,7 +77,7 @@ There are two ways to test the trigger node with the emulator:
 
 2. Set the emulator environment variable for n8n:
    ```bash
-   export FIRESTORE_EMULATOR_HOST=localhost:8001
+   export FIRESTORE_EMULATOR_HOST=localhost:9099
    ```
 
 3. Start n8n:
@@ -132,7 +132,7 @@ Configure the node with:
 
 ## Troubleshooting
 
-- **Connection Issues**: Ensure the emulator is running on port 8001
+- **Connection Issues**: Ensure the emulator is running on port 9099
 - **No Events**: Check that the `FIRESTORE_EMULATOR_HOST` environment variable is set
 - **Node Not Found**: Verify that the package is built and linked correctly
 - **Authentication Errors**: Use Application Default Credentials with the emulator

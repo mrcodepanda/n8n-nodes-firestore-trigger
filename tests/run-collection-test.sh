@@ -6,16 +6,16 @@ set -e
 echo "==== Starting Firestore Collection Listener Test ===="
 
 # Check if emulator is already running
-if ! curl -s "http://localhost:8001/" > /dev/null; then
+if ! curl -s "http://localhost:9099/" > /dev/null; then
   echo "Starting Firebase Emulator..."
   # Start emulator in background
   firebase emulators:start --only firestore &
   EMULATOR_PID=$!
-  
+
   # Wait for emulator to start
   echo "Waiting for emulator to start..."
   sleep 5
-  
+
   # Flag to know we started the emulator (to stop it later)
   STARTED_EMULATOR=true
 else

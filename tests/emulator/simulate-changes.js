@@ -6,7 +6,7 @@ firebase.initializeApp({
 });
 
 // Point to the Firestore emulator
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8001';
+process.env.FIRESTORE_EMULATOR_HOST = 'localhost:9099';
 
 // Get Firestore instance
 const db = firebase.firestore();

@@ -5,7 +5,7 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 ## Task Status Legend
 
 - ✅ Completed
-- 🔄 In Progress 
+- 🔄 In Progress
 - ⏱️ Scheduled
 - ⚠️ Blocked
 - 🔍 Under Review
@@ -48,7 +48,7 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 | ✅ | Add query filter support for collection listeners | | | May 11, 2025 |
 | ✅ | Implement proper event filtering (added, modified, removed) | | | May 11, 2025 |
 | ✅ | Create error handling and reconnection logic | Basic error handling implemented | | May 11, 2025 |
-| 🔄 | Add subcollection support | Implementing path parsing and dynamic reference resolution | | |
+| ✅ | Add subcollection support | Implemented path parsing, dynamic reference resolution, and pattern-based collection monitoring | | May 11, 2025 |
 
 ### Phase 4: Testing
 
@@ -94,16 +94,16 @@ These are optional optimizations that can be implemented after the core function
 
 | Status | Task | Notes | Priority | Completion Date |
 |--------|------|-------|----------|----------------|
-| 🔄 | Update UI parameter from "Collection" to "Collection Path" | Change field to support paths like "collection_1/:user_id/subcol_1" | High | |
-| 🔄 | Add path format guidance for users | Add notice parameter with examples and explanation for path patterns | High | |
-| 🔄 | Implement collection path parsing function | Create utility to handle paths with dynamic segments and subcollections | High | |
-| 🔄 | Support path patterns with colon parameters | Handle paths like "collection/:param/subcollection" as dynamic listener templates | High | |
-| 🔄 | Create dynamic listener management system | Implement listener creation/removal for each document that matches the pattern | High | |
-| 🔄 | Update collection/document listener logic | Modify to use new path parsing utility functions | High | |
-| 🔄 | Add support for n8n expressions in path segments | Ensure compatibility with `{{$node["NodeName"].data["field"]}}` expressions | High | |
-| ⏱️ | Write tests for subcollection path parsing | Create unit tests for path validation and reference creation | High | |
-| ⏱️ | Create example workflows using subcollections | Document examples showing subcollection usage | Medium | |
-| ⏱️ | Update README with subcollection usage information | Add examples and updated parameter descriptions | Medium | |
+| ✅ | Update UI parameter from "Collection" to "Collection Path" | Changed field to support paths like "collection_1/:user_id/subcol_1" | High | May 11, 2025 |
+| ✅ | Add path format guidance for users | Added notice parameter with examples and explanation for path patterns | High | May 11, 2025 |
+| ✅ | Implement collection path parsing function | Created utility to handle paths with dynamic segments and subcollections | High | May 11, 2025 |
+| ✅ | Support path patterns with colon parameters | Implemented handling for paths like "collection/:param/subcollection" as dynamic listener templates | High | May 11, 2025 |
+| ✅ | Create dynamic listener management system | Implemented listener creation/removal for each document that matches the pattern | High | May 11, 2025 |
+| ✅ | Update collection/document listener logic | Modified to use new path parsing utility functions | High | May 11, 2025 |
+| ✅ | Add support for n8n expressions in path segments | Ensured compatibility with `{{$node["NodeName"].data["field"]}}` expressions | High | May 11, 2025 |
+| ✅ | Write tests for subcollection path parsing | Created comprehensive unit tests for path validation and reference creation | High | May 11, 2025 |
+| 🔄 | Create example workflows using subcollections | Working on examples showing subcollection usage | Medium | |
+| 🔄 | Update README with subcollection usage information | Working on adding examples and updated parameter descriptions | Medium | |
 
 ### Reconnection Strategy
 
@@ -256,3 +256,9 @@ For tasks that are blocked:
   * Begin implementation of path parsing utilities in GenericFunctions.ts
   * Update UI parameters to support subcollection paths
   * Modify listener logic to use new path parsing functions
+
+## Known Issues
+
+| Status | Issue | Description | Priority | Target Date |
+|--------|-------|-------------|----------|------------|
+| ⚠️ | Delete events not always received | Delete events are not consistently triggered during testing, especially in the emulator environment. This affects document deletion notifications in nested collection patterns. | Medium | TBD |

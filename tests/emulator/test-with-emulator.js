@@ -7,7 +7,7 @@ const firebase = require('firebase-admin');
 const { FirestoreTrigger } = require('../../dist/nodes/FirestoreTrigger/FirestoreTrigger.node');
 
 // Configure and point to the Firebase emulator
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8001';
+process.env.FIRESTORE_EMULATOR_HOST = 'localhost:9099';
 
 // Create a mock for the n8n hook functions
 const mockHookFunctions = {
