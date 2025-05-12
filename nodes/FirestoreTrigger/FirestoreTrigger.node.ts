@@ -201,43 +201,43 @@ export class FirestoreTrigger implements INodeType {
 		// Get node parameters
 		const operation = this.getNodeParameter('operation') as string;
 		let collectionPath = this.getNodeParameter('collection') as string;
-		
+
 		// Validate collection path - this is critical
 		if (!collectionPath || collectionPath.trim() === '') {
 			throw new NodeOperationError(this.getNode(), 'Collection path cannot be empty');
 		}
-		
+
 		// Normalize the collection path to remove any extra spaces or slashes
 		collectionPath = collectionPath.trim();
 		// Remove leading and trailing slashes if present
 		collectionPath = collectionPath.replace(/^\/+|\/+$/g, '');
-		
+
 		// Validate that we still have a path after normalization
 		if (collectionPath === '') {
 			throw new NodeOperationError(this.getNode(), 'Collection path cannot be empty');
 		}
-		
+
 		// Verify each path segment is valid
 		const pathSegments = collectionPath.split('/');
 		for (const segment of pathSegments) {
 			if (segment.trim() === '' && !segment.startsWith(':')) {
 				throw new NodeOperationError(
-					this.getNode(), 
+					this.getNode(),
 					`Invalid collection path: "${collectionPath}" contains empty segments`
 				);
 			}
 		}
-		
+
 		const documentId =
 			operation === 'listenToDocument'
 				? (this.getNodeParameter('documentId') as string)
 				: undefined;
-				
+
 		// Validate document ID when needed
 		if (operation === 'listenToDocument' && (!documentId || documentId.trim() === '')) {
 			throw new NodeOperationError(this.getNode(), 'Document ID cannot be empty');
 		}
-		
+
 		const events =
 			operation === 'listenToCollection'
 				? (this.getNodeParameter('events', []) as string[])
@@ -252,7 +252,7 @@ export class FirestoreTrigger implements INodeType {
 
 		// Get credentials
 		const credentials = await this.getCredentials('firebaseAdminApi');
-		
+
 		// Validate credentials before proceeding
 		const validationError = validateFirebaseCredentials(credentials);
 		if (validationError) {
@@ -261,7 +261,7 @@ export class FirestoreTrigger implements INodeType {
 				`Firebase credential validation failed: ${validationError}`
 			);
 		}
-		
+
 		console.log('Project ID:', credentials.projectId);
 
 		// Initialize Firebase with better error handling
@@ -272,15 +272,15 @@ export class FirestoreTrigger implements INodeType {
 		} catch (error) {
 			const message = (error as Error).message;
 			console.error('Firebase initialization error:', message);
-			
+
 			throw new NodeOperationError(
 				this.getNode(),
-				`Firebase authentication error: ${message.includes('default credentials') ? 
-					'Could not load Firebase credentials. Please verify your credential configuration in n8n.' : 
+				`Firebase authentication error: ${message.includes('default credentials') ?
+					'Could not load Firebase credentials. Please verify your credential configuration in n8n.' :
 					message}`
 			);
 		}
-		
+
 		const db = getFirestore(firebaseApp);
 		console.log('Firebase app initialized successfully');
 
@@ -421,19 +421,19 @@ function setupCollectionListener(
 	if (!collectionPath || collectionPath.trim() === '') {
 		throw new NodeOperationError(this.getNode(), 'Cannot set up listener: Collection path is empty');
 	}
-	
+
 	console.log(`Setting up collection listener for: "${collectionPath}"`);
-	
+
 	// Using any to avoid type checking issues with Firestore types
 	let query: any;
-	
+
 	try {
 		// Create collection reference
 		query = db.collection(collectionPath);
 		if (!query) {
 			throw new NodeOperationError(this.getNode(), `Failed to create collection reference for path: ${collectionPath}`);
 		}
-		
+
 		// Add query filters if provided
 		if (options.queryFilters && (options.queryFilters as IDataObject).filters) {
 			const filters = (options.queryFilters as IDataObject).filters as IDataObject[];
@@ -442,7 +442,7 @@ function setupCollectionListener(
 				query = query.where(filter.field as string, filter.operator as string, filter.value);
 			}
 		}
-		
+
 		// Set up collection listener with explicit callback functions
 		const unsubscribeFn = query.onSnapshot(
 			(snapshot: any) => {
@@ -516,10 +516,10 @@ function setupCollectionListener(
 				// Don't reject as this would stop the trigger
 			}
 		);
-		
+
 		console.log('Collection listener setup complete');
 		return unsubscribeFn;
-		
+
 	} catch (setupError) {
 		console.error('Error setting up collection listener:', setupError);
 		throw setupError;
@@ -614,26 +614,26 @@ async function setupDynamicCollectionListener(
 	if (!collectionPathPattern || collectionPathPattern.trim() === '') {
 		throw new NodeOperationError(this.getNode(), 'Cannot set up dynamic listener: Collection path pattern is empty');
 	}
-	
+
 	// Normalize the pattern path
 	collectionPathPattern = collectionPathPattern.trim().replace(/^\/+|\/+$/g, '');
-	
+
 	if (collectionPathPattern === '') {
 		throw new NodeOperationError(this.getNode(), 'Collection path pattern cannot be empty');
 	}
-	
+
 	const patternKey = createPatternListenerKey(collectionPathPattern);
 	console.log(`Setting up dynamic collection listener for pattern: "${collectionPathPattern}"`);
 
 	// Find the parent path of the first parameter in the path
 	const parentPath = findFirstParameterParentPath(collectionPathPattern);
-	
+
 	if (!parentPath) {
 		throw new NodeOperationError(this.getNode(), `Could not determine parent path for pattern: ${collectionPathPattern}`);
 	}
-	
+
 	console.log(`Determined parent path: "${parentPath}" for pattern: "${collectionPathPattern}"`);
-	
+
 	// Validate parent path is not empty
 	if (!parentPath.trim()) {
 		throw new NodeOperationError(this.getNode(), 'Resolved parent path is empty');
@@ -647,7 +647,7 @@ async function setupDynamicCollectionListener(
 	const patternTail = fullPattern.slice(parentSegments.length);
 
 	console.log(`Pattern tail: ${patternTail.join('/')}`);
-	
+
 	// Determine if the pattern tail's first segment is a parameter
 	let paramName = '';
 	const firstTailSegment = patternTail[0];
@@ -667,45 +667,53 @@ async function setupDynamicCollectionListener(
 		if (!docPath || docPath.trim() === '') {
 			throw new NodeOperationError(this.getNode(), 'Cannot create subcollection listener with empty document path');
 		}
-		
-		// Build the full subcollection path based on the pattern
-		let fullSubcollectionPath = docPath;
 
-		// Add remaining segments from the pattern, replacing parameters with values
-		for (let i = 0; i < patternTail.length; i++) {
+		// Get the segments we need to add to the path from patternTail
+		const pathSegmentsToAdd: string[] = [];
+		
+		// We start from index 1 because at index 0 we typically have the parameter that's already
+		// been replaced with the document ID in docPath
+		for (let i = 1; i < patternTail.length; i++) {
 			const segment = patternTail[i];
 			if (isPathParameter(segment)) {
 				const paramName = extractParameterName(segment);
-				// If we don't have a value for this parameter, we can't create a listener
+				// If we don't have a value for this parameter, use a placeholder
 				if (!paramValues[paramName]) {
 					console.log(`Missing parameter value for ${paramName}, using 'placeholder'`);
-					fullSubcollectionPath += '/placeholder';
+					pathSegmentsToAdd.push('placeholder');
 				} else {
-					fullSubcollectionPath += `/${paramValues[paramName]}`;
+					pathSegmentsToAdd.push(paramValues[paramName]);
 				}
 			} else {
-				fullSubcollectionPath += `/${segment}`;
+				pathSegmentsToAdd.push(segment);
 			}
 		}
+		
+		// Build the full path by adding the remaining segments to the document path
+		// IMPORTANT: This fixes the path duplication issue
+		let fullSubcollectionPath = docPath;
+		if (pathSegmentsToAdd.length > 0) {
+			fullSubcollectionPath = `${docPath}/${pathSegmentsToAdd.join('/')}`;
+		}
+		
+		console.log(`Creating subcollection listener for: "${fullSubcollectionPath}"`);
 
 		// Validate the constructed path
 		if (!fullSubcollectionPath || fullSubcollectionPath.trim() === '') {
 			throw new NodeOperationError(this.getNode(), 'Constructed subcollection path is empty');
 		}
-		
+
 		// Verify each segment after parameter substitution
 		const pathSegments = fullSubcollectionPath.split('/');
 		for (const segment of pathSegments) {
 			if (segment.trim() === '') {
 				throw new NodeOperationError(
-					this.getNode(), 
+					this.getNode(),
 					`Invalid constructed subcollection path: "${fullSubcollectionPath}" contains empty segments`
 				);
 			}
 		}
 
-		console.log(`Creating subcollection listener for: "${fullSubcollectionPath}"`);
-		
 		try {
 			// Create a collection listener for this path
 			return setupCollectionListener.call(
@@ -719,7 +727,7 @@ async function setupDynamicCollectionListener(
 		} catch (error) {
 			console.error(`Error creating subcollection listener for path "${fullSubcollectionPath}":`, error);
 			throw new NodeOperationError(
-				this.getNode(), 
+				this.getNode(),
 				`Failed to create subcollection listener: ${(error as Error).message}`
 			);
 		}
@@ -728,7 +736,7 @@ async function setupDynamicCollectionListener(
 	// Set up a parent collection listener to watch for document changes
 	let parentCollectionPath: string;
 	let parentDocumentId: string;
-	
+
 	// Handle top-level collections like "users" specially
 	if (!parentPath.includes('/')) {
 		// For a path like "users/:userId/orders", the parentPath might just be "users"
@@ -751,20 +759,20 @@ async function setupDynamicCollectionListener(
 		parentCollectionPath = '__root__'; // Special marker to handle top-level collections
 		console.log(`Empty parent collection path detected, using __root__ marker`);
 	}
-	
+
 	// Process for non-parameter parent document
 	if (!isPathParameter(parentDocumentId)) {
 		await processStaticParentDocument.call(
-			this, 
-			db, 
-			patternKey, 
-			parentPath, 
-			parentCollectionPath, 
-			parentDocumentId, 
-			paramName, 
+			this,
+			db,
+			patternKey,
+			parentPath,
+			parentCollectionPath,
+			parentDocumentId,
+			paramName,
 			createSubcollectionListener
 		);
-	} 
+	}
 	// Process for parameter parent document
 	else {
 		await processParameterizedParentDocument.call(
@@ -796,60 +804,62 @@ async function processStaticParentDocument(
 	createSubcollectionListener: (docPath: string, paramValues: Record<string, string>) => (() => void)
 ): Promise<void> {
 	console.log(`Processing static parent document: ${parentDocumentId}`);
-	
+
 	// Handle top-level collections
 	let parentDocRef;
 	try {
 		if (parentCollectionPath === '__root__') {
 			console.log(`Getting top-level collection: ${parentDocumentId}`);
-			
+
 			// For a top-level collection, we don't need to query for existence - we know it exists
 			console.log(`Top-level collection exists by default: ${parentDocumentId}`);
-			
+
 			// For patterns like "users/:user_id/orders", handle as a special case
 			// The :user_id parameter is in patternTail, and we need to set up listeners
 			// for all documents in the "users" collection
-			
+
 			// Create a collection snapshot to get all documents
 			const snapshot = await db.collection(parentDocumentId).get();
 			console.log(`Found ${snapshot.size} documents in top-level collection: ${parentDocumentId}`);
-			
+
 			// For each document, create a subcollection listener
 			snapshot.forEach((doc: any) => {
+				// Get the full path directly from the document reference
 				const docPath = doc.ref.path;
 				console.log(`Setting up listener for document in top-level collection: ${docPath}`);
-				
+
 				// Create parameter values map for the parameter in the path
 				const paramValues: Record<string, string> = {};
 				if (paramName) {
 					paramValues[paramName] = doc.id;
 				}
-				
-				// Create subcollection listener with the document path and parameter values
-				const subPath = `${parentDocumentId}/${doc.id}`;
-				const subcollectionListener = createSubcollectionListener(subPath, paramValues);
-				
+
+				// IMPORTANT: Use the document path directly from Firebase, not something we construct
+				// This ensures we have the correct path without duplication issues
+				const subcollectionListener = createSubcollectionListener(docPath, paramValues);
+
 				// Register this listener
 				registerPatternListener(
 					patternKey,
-					subPath,
+					docPath,
 					subcollectionListener,
-					createDocumentListenerKey(subPath)
+					createDocumentListenerKey(docPath)
 				);
 			});
-			
+
 			// Listen for changes to the top-level collection
 			const collectionListener = db.collection(parentDocumentId).onSnapshot(
 				(snapshot: any) => {
 					console.log(`Top-level collection changed: ${parentDocumentId}`);
-					
+
 					// Process each change
 					snapshot.docChanges().forEach((change: any) => {
 						const doc = change.doc;
+						// Get the full path directly from the document reference
 						const docPath = doc.ref.path;
-						
+
 						console.log(`Document ${change.type} in top-level collection: ${docPath}`);
-						
+
 						// If a document was added, create a new subcollection listener
 						if (change.type === 'added') {
 							// Create parameter values map
@@ -857,23 +867,21 @@ async function processStaticParentDocument(
 							if (paramName) {
 								paramValues[paramName] = doc.id;
 							}
-							
-							// Create subcollection listener
-							const subPath = `${parentDocumentId}/${doc.id}`;
-							const subcollectionListener = createSubcollectionListener(subPath, paramValues);
-							
+
+							// Create subcollection listener - use the Firebase-provided path directly
+							const subcollectionListener = createSubcollectionListener(docPath, paramValues);
+
 							// Register this listener
 							registerPatternListener(
 								patternKey,
-								subPath,
+								docPath,
 								subcollectionListener,
-								createDocumentListenerKey(subPath)
+								createDocumentListenerKey(docPath)
 							);
 						}
 						// If a document was removed, remove the subcollection listener
 						else if (change.type === 'removed') {
-							const subPath = `${parentDocumentId}/${doc.id}`;
-							unregisterPatternListener(patternKey, subPath);
+							unregisterPatternListener(patternKey, docPath);
 						}
 					});
 				},
@@ -881,10 +889,10 @@ async function processStaticParentDocument(
 					console.error(`Top-level collection listener error: ${parentDocumentId}`, error);
 				}
 			);
-			
+
 			// Register the collection listener
 			registerListener(createDocumentListenerKey(parentDocumentId), collectionListener);
-			
+
 			// We've handled the top-level collection specially, so return
 			return;
 		} else {
@@ -957,7 +965,7 @@ async function processStaticParentDocument(
 
 		// Register the parent listener
 		registerListener(createDocumentListenerKey(parentPath), parentListener);
-		
+
 	} catch (error) {
 		console.error(`Error processing static parent document: ${parentPath}`, error);
 		throw new NodeOperationError(
@@ -980,7 +988,7 @@ async function processParameterizedParentDocument(
 	createSubcollectionListener: (docPath: string, paramValues: Record<string, string>) => (() => void)
 ): Promise<void> {
 	console.log(`Processing parameterized parent document: ${parentDocumentId}`);
-	
+
 	// Handle top-level collections
 	let parentCollection;
 	if (parentCollectionPath === '__root__') {
@@ -1056,7 +1064,7 @@ async function processParameterizedParentDocument(
 
 		// Register the parent collection listener
 		registerListener(createDocumentListenerKey(parentCollectionPath), parentCollectionListener);
-		
+
 	} catch (error) {
 		console.error(`Error processing parameterized parent document: ${parentDocumentId}`, error);
 		throw new NodeOperationError(
@@ -1093,7 +1101,7 @@ function cleanupPatternListeners(
 		// since it contains the actual collection name (e.g., "users")
 		const topLevelCollectionKey = createDocumentListenerKey(parentDocumentId);
 		console.log(`Cleaning up top-level collection listener: ${topLevelCollectionKey}`);
-		
+
 		if (activeListeners[topLevelCollectionKey]) {
 			console.log(`Found active listener for top-level collection, unsubscribing: ${topLevelCollectionKey}`);
 			activeListeners[topLevelCollectionKey]();
@@ -1101,19 +1109,19 @@ function cleanupPatternListeners(
 		} else {
 			console.log(`No active listener found for top-level collection: ${topLevelCollectionKey}`);
 		}
-		
+
 		// Also need to clean up individual document listeners for this collection
-		const docKeysToCleanup = Object.keys(activeListeners).filter(key => 
+		const docKeysToCleanup = Object.keys(activeListeners).filter(key =>
 			key.startsWith(`doc:${parentDocumentId}/`));
-		
+
 		console.log(`Found ${docKeysToCleanup.length} document listeners to clean up for top-level collection`);
-		
+
 		docKeysToCleanup.forEach(key => {
 			console.log(`Cleaning up document listener: ${key}`);
 			activeListeners[key]();
 			delete activeListeners[key];
 		});
-		
+
 		return;
 	}
 
