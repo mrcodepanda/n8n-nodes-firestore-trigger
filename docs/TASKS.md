@@ -79,9 +79,11 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 |--------|------|-------|-------------|----------------|
 | ✅ | Final code review | Completed comprehensive code review and fixed repository URL | | May 13, 2025 |
 | ✅ | Fix any linting issues (`pnpm run lint`) | No linting issues found | | May 13, 2025 |
-| ✅ | Prepare package for npm publishing | Updated package.json, added CHANGELOG.md, created publishing guide | | May 13, 2025 |
-| 🔄 | Create GitHub repository for the node package | | | |
-| 🔄 | Publish to npm registry | | | |
+| ✅ | Prepare package for npm publishing | Updated package.json, added CHANGELOG.md, created publishing guide, enhanced .npmignore | | May 13, 2025 |
+| ✅ | Rename project to standard naming convention | Renamed from n8n-firestore-trigger to n8n-nodes-firestore-trigger | | May 13, 2025 |
+| ✅ | Reorganize documentation structure | Moved testing docs to tests/docs/, consolidated documentation | | May 13, 2025 |
+| ✅ | Create GitHub repository | GitHub repository created at https://github.com/mrcodepanda/n8n-nodes-firestore-trigger | | May 13, 2025 |
+| 🔄 | Publish to npm registry | Ready for publishing with verified package structure | | |
 | ⏱️ | Verify installation from npm works correctly | | | |
 
 ## Optional Performance Optimization Tasks
@@ -100,8 +102,8 @@ These are optional optimizations that can be implemented after the core function
 | ✅ | Update collection/document listener logic | Modified to use new path parsing utility functions | High | May 11, 2025 |
 | ✅ | Add support for n8n expressions in path segments | Ensured compatibility with `{{$node["NodeName"].data["field"]}}` expressions | High | May 11, 2025 |
 | ✅ | Write tests for subcollection path parsing | Created comprehensive unit tests for path validation and reference creation | High | May 11, 2025 |
-| ✅ | Create example workflows using subcollections | Created EXAMPLE_WORKFLOWS.md with ready-to-use workflow templates | Medium | May 13, 2025 |
-| ✅ | Update README with subcollection usage information | Added detailed subcollection usage section with examples and patterns | Medium | May 13, 2025 |
+| ✅ | Create example workflows using subcollections | Created EXAMPLE_WORKFLOWS.md with ready-to-use workflow templates for subcollection patterns | Medium | May 13, 2025 |
+| ✅ | Update README with subcollection usage information | Added detailed subcollection usage section with examples and patterns in README.md | Medium | May 13, 2025 |
 
 ### Throttling System
 
@@ -223,7 +225,12 @@ For tasks that are blocked:
 
 ### Current Update (May 13, 2025)
 
-* Phase 6 Progress:
+* Package Preparation & Documentation Improvements:
+  * Renamed project from `n8n-firestore-trigger` to the standard `n8n-nodes-firestore-trigger` format
+  * Reorganized project documentation structure for better organization:
+    * Moved testing documentation from `docs/` to `tests/docs/`
+    * Consolidated test documentation in a single comprehensive file
+    * Created better navigation between documentation files
   * Completed final code review with necessary fixes
   * Confirmed no linting issues with the codebase
   * Created comprehensive documentation including:
@@ -235,7 +242,10 @@ For tasks that are blocked:
   * Enhanced .npmignore file to properly exclude development files
   * Fixed repository URL format in package.json
   * Updated README with subcollection usage information
-  * Prepared package for npm publishing with dry run verification
+  * Prepared package for npm publishing with dry run verification:
+    * Added files array to include README.md and LICENSE.md
+    * Ensured package structure is optimized for npm publishing
+    * Verified package contents with dry-run tests
   * Generated implementation completed for all core functionality
 
 * Next immediate actions:
