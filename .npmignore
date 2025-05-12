@@ -1,2 +1,36 @@
+# OS generated files
 .DS_Store
+Thumbs.db
+*.log
+
+# Build and dev
+node_modules/
 *.tsbuildinfo
+tsconfig.json
+tsconfig.test.json
+.vscode/
+.editorconfig
+.prettierrc.js
+.eslintrc.js
+.eslintrc.prepublish.js
+
+# Tests
+tests/
+dist/tests/
+coverage/
+jest.config.js
+
+# Source files
+nodes/**/*.ts
+credentials/**/*.ts
+!nodes/**/*.d.ts
+!credentials/**/*.d.ts
+
+# Development resources
+docs/
+README_TEMPLATE.md
+CODE_OF_CONDUCT.md
+.git/
+.github/
+.gitignore
+gulpfile.js

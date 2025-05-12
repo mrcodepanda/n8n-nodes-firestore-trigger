@@ -1,46 +1,193 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-firestore-trigger
 
-# n8n-nodes-starter
+This is an n8n community node. It lets you use Firebase Firestore in your n8n workflows as a trigger source.
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+Firebase Firestore is a flexible, scalable NoSQL cloud database that lets you store and sync data between your users in real-time. This node allows you to listen for changes in your Firestore database and automatically trigger workflows when data is added, modified, or removed.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-## Prerequisites
+[Installation](#installation)
+[Operations](#operations)
+[Credentials](#credentials)
+[Compatibility](#compatibility)
+[Usage](#usage)
+[Resources](#resources)
+[Version history](#version-history)
 
-You need the following installed on your development machine:
+## Installation
 
-* [git](https://git-scm.com/downloads)
-* Node.js and pnpm. Minimum version Node 18. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  pnpm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## Using this starter
+```bash
+# Install from npm
+pnpm add n8n-nodes-firestore-trigger
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+# Alternatively, for local development:
+cd ~/.n8n/custom/
+pnpm link /path/to/n8n-nodes-firestore-trigger
+```
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `pnpm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `pnpm lint` to check for errors or `pnpm lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+Restart n8n after installation.
 
-## More information
+## Operations
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+The Firestore Trigger node supports the following operations:
 
-## License
+| Operation | Description |
+|-----------|-------------|
+| Listen to Collection | Listen for changes to documents in a collection |
+| Listen to Document | Listen for changes to a specific document |
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+### Collection Listeners
+When listening to a collection, you can:
+
+- Monitor all documents in a collection or subcollection
+- Filter which events trigger the workflow (Added, Modified, Removed)
+- Use query filters to only trigger on specific document changes
+- Monitor nested subcollections using path patterns (e.g., "users/:userId/orders")
+- Use dynamic expressions in path segments for flexible data access
+
+### Document Listeners
+When listening to a specific document, you can:
+
+- Monitor a single document for any changes
+- Include metadata changes if needed
+- Get the complete document data when it changes
+
+## Credentials
+
+To use this node, you need Firebase Admin SDK credentials:
+
+### Prerequisites:
+1. A Firebase project with Firestore enabled
+2. A service account with appropriate permissions
+
+### Steps to obtain credentials:
+1. Go to your [Firebase Console](https://console.firebase.google.com/)
+2. Navigate to Project Settings > Service Accounts
+3. Click "Generate new private key"
+4. Download the JSON file containing your service account credentials
+
+### Setting up in n8n:
+1. In your n8n instance, go to the Credentials tab
+2. Click "Create New Credentials"
+3. Select "Firebase Admin API"
+4. Choose Authentication Method:
+   - Service Account JSON: Paste the contents of your JSON credentials file
+   - Application Default Credentials: For testing with emulator or environment-based auth
+5. Enter your Firebase Project ID
+6. Optionally specify a Database ID (leave as "(default)" for standard setup)
+7. Save your credentials
+
+## Compatibility
+
+- Requires n8n version 0.209.0 or later
+- Compatible with Firebase Admin SDK v13.0.0 and later
+- Tested with Firestore database in Native mode
+
+## Usage
+
+### Basic Collection Monitoring
+
+To monitor all changes to a collection:
+
+1. Add the Firestore Trigger node to your workflow (Note: The node appears as "Firestore" in the UI rather than "Firestore Trigger")
+2. Select "Listen to Collection" operation
+3. Enter the collection path (e.g., "users")
+4. Select which events to trigger on (Added, Modified, Removed)
+5. Save and activate the workflow
+
+The workflow will execute whenever documents in the collection are added, modified, or removed.
+
+### Monitoring a Specific Document
+
+To monitor a specific document:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Document" operation
+3. Enter the collection path (e.g., "orders")
+4. Enter the document ID (e.g., "order-123")
+5. Save and activate the workflow
+
+The workflow will execute whenever the specified document changes.
+
+### Using Query Filters
+
+To only trigger the workflow for specific documents:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Collection" operation
+3. Enter the collection path
+4. Under "Options" > "Query Filters", add one or more filters:
+   - Field: The document field to filter on
+   - Operator: Comparison operator (==, !=, >, >=, <, <=, array-contains)
+   - Value: The value to compare against
+5. Save and activate the workflow
+
+The workflow will only execute for documents that match the filter criteria.
+
+### Monitoring Subcollections
+
+To monitor a subcollection:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Collection" operation
+3. Enter the path including the subcollection (e.g., "users/user-123/orders")
+4. Select which events to trigger on
+5. Save and activate the workflow
+
+### Using Path Patterns
+
+To dynamically monitor subcollections across multiple documents:
+
+1. Add the Firestore Trigger node to your workflow
+2. Select "Listen to Collection" operation
+3. Enter a path with a parameter (e.g., "users/:userId/orders")
+   - The `:userId` parameter will match any document ID in the users collection
+4. Select which events to trigger on
+5. Save and activate the workflow
+
+This creates a dynamic listener that will monitor the "orders" subcollection under any document in the "users" collection.
+
+### Node Output
+
+When a document change triggers the workflow, the node outputs the following data:
+
+```json
+{
+  "id": "document-id",
+  "data": {
+    // Document fields and values
+  },
+  "changeType": "added | modified | removed",
+  "path": "collection/document-id",
+  "metadata": {
+    "hasPendingWrites": false,
+    "fromCache": false
+  },
+  "timestamp": 1715501234567
+}
+```
+
+## Resources
+
+* [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+* [Firebase Firestore documentation](https://firebase.google.com/docs/firestore)
+* [Firebase Admin SDK documentation](https://firebase.google.com/docs/admin/setup)
+* Testing documentation can be found in the `tests/docs/` folder
+
+## Version history
+
+### Version 1.0.0
+- Initial release
+- Support for collection and document listeners
+- Support for event filtering (added, modified, removed)
+- Support for query filters
+- Support for subcollection monitoring
+- Support for path patterns with parameters
+- Support for metadata changes
+
+### Known Issues
+
+1. **Node Display Name**: When installed in n8n, the node may appear as "Firestore" rather than "Firestore Trigger" in the node selection menu. This is a known issue and doesn't affect functionality.
+2. **Delete Events**: Delete events may not be consistently triggered during testing, especially in the emulator environment. This primarily affects document deletion notifications in nested collection patterns.

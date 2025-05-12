@@ -18,9 +18,18 @@ module.exports = {
 		extraFileExtensions: ['.json'],
 	},
 
-	ignorePatterns: ['.eslintrc.js', '**/*.js', '**/node_modules/**', '**/dist/**'],
+	ignorePatterns: ['.eslintrc.js', '**/*.js', '**/node_modules/**', '**/dist/**', 'tests/emulator/**'],
 
 	overrides: [
+		{
+			files: ['./tests/**/*.ts'],
+			rules: {
+				'@typescript-eslint/no-explicit-any': 'off',
+				'@typescript-eslint/no-var-requires': 'off',
+				'@typescript-eslint/explicit-module-boundary-types': 'off',
+				'@typescript-eslint/ban-ts-comment': 'off',
+			},
+		},
 		{
 			files: ['package.json'],
 			plugins: ['eslint-plugin-n8n-nodes-base'],

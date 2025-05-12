@@ -1,19 +1,25 @@
 {
-  "name": "n8n-nodes-<...>",
-  "version": "0.1.0",
-  "description": "",
+  "name": "n8n-nodes-firestore-trigger",
+  "version": "1.0.0",
+  "description": "n8n node to trigger workflows from Firebase Firestore changes",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "firebase",
+    "firestore",
+    "trigger",
+    "database",
+    "realtime",
+    "n8n"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/mrcodepanda/n8n-nodes-firestore-trigger",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "Sudhanshu Aggarwal (@mrcodepanda)",
+    "email": "mrcodepanda@refactors.io"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "git+https://github.com/mrcodepanda/n8n-nodes-firestore-trigger.git"
   },
   "engines": {
     "node": ">=18.10",
@@ -28,29 +34,49 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json"
+    "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
+    "prepare-publish": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
+    "publish-dry-run": "npm publish --dry-run",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "emulator:start": "cd tests/emulator && firebase emulators:start --only firestore --project n8n-nodes-firestore-trigger-test",
+    "emulator:seed": "cd tests/emulator && node seed-data.js",
+    "emulator:test": "cd tests/emulator && node test-with-emulator.js",
+    "emulator:simulate": "cd tests/emulator && node simulate-changes.js",
+    "emulator:simulate:subcollection": "cd tests/emulator && node simulate-subcollection-changes.js",
+    "test:collection": "./tests/run-collection-test.sh",
+    "test:document": "./tests/run-document-test.sh",
+    "test:subcollection": "./tests/run-subcollection-test.sh"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE.md"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ExampleCredentialsApi.credentials.js",
-      "dist/credentials/HttpBinApi.credentials.js"
+      "dist/credentials/FirebaseAdminApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/ExampleNode/ExampleNode.node.js",
-      "dist/nodes/HttpBin/HttpBin.node.js"
+      "dist/nodes/FirestoreTrigger/FirestoreTrigger.node.js"
     ]
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@typescript-eslint/parser": "^7.15.0",
     "eslint": "^8.56.0",
     "eslint-plugin-n8n-nodes-base": "^1.16.1",
     "gulp": "^4.0.2",
+    "jest": "^29.5.0",
     "prettier": "^3.3.2",
-    "typescript": "^5.5.3"
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.5.3",
+    "sqlite3": "^5.1.7"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.5.0",
+    "firebase-admin": "^12.0.0"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
