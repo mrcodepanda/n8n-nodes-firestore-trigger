@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-firestore-trigger",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "n8n node to trigger workflows from Firebase Firestore changes",
   "keywords": [
     "n8n-community-node-package",
@@ -12,10 +12,10 @@
     "n8n"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/yourusername/n8n-nodes-firestore-trigger",
+  "homepage": "https://github.com/mrcodepanda/n8n-nodes-firestore-trigger",
   "author": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
+    "name": "Sudhanshu Aggarwal (@mrcodepanda)",
+    "email": "mrcodepanda@refactors.io"
   },
   "repository": {
     "type": "git",
