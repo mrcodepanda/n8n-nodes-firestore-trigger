@@ -1,6 +1,6 @@
 # Firestore Trigger Node Tests
 
-This directory contains tests for the n8n Firestore Trigger node.
+This directory contains tests and test documentation for the n8n Firestore Trigger node.
 
 ## Test Status
 
@@ -8,6 +8,13 @@ This directory contains tests for the n8n Firestore Trigger node.
 ✅ **COMPLETED (May 12, 2025)**: Additionally validated with a real Firebase instance.
 
 The node has been thoroughly tested using both automated tests with the Firebase emulator and manual testing with a real Firebase instance. All tests have passed successfully, confirming that the node works as expected in both environments.
+
+## Test Documentation
+
+The following detailed testing guides are available in this directory:
+
+- [Credential Testing](CREDENTIAL_TESTING.md) - Guide for testing Firebase Admin API credentials in n8n
+- [Emulator Testing](EMULATOR_TESTING.md) - Guide for using the Firebase emulator to test the node without a real Firebase project
 
 ## Test Structure
 

@@ -174,6 +174,7 @@ When a document change triggers the workflow, the node outputs the following dat
 * [n8n community nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
 * [Firebase Firestore documentation](https://firebase.google.com/docs/firestore)
 * [Firebase Admin SDK documentation](https://firebase.google.com/docs/admin/setup)
+* Testing documentation can be found in the `tests/docs/` folder
 
 ## Version history
 
