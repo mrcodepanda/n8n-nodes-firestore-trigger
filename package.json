@@ -37,7 +37,7 @@
     "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
     "test": "jest",
     "test:watch": "jest --watch",
-    "emulator:start": "cd tests/emulator && firebase emulators:start --only firestore --project n8n-firestore-trigger-test",
+    "emulator:start": "cd tests/emulator && firebase emulators:start --only firestore --project n8n-nodes-firestore-trigger-test",
     "emulator:seed": "cd tests/emulator && node seed-data.js",
     "emulator:test": "cd tests/emulator && node test-with-emulator.js",
     "emulator:simulate": "cd tests/emulator && node simulate-changes.js",

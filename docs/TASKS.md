@@ -1,4 +1,4 @@
-# n8n-firestore-trigger Implementation Tasks
+# n8n-nodes-firestore-trigger Implementation Tasks
 
 This document tracks the progress of implementing the Firebase Firestore Trigger node for n8n. Use this file to monitor implementation progress and manage priorities.
 
@@ -72,7 +72,6 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 | ✅ | Update README with any implementation-specific notes | Added notes including known issues section | | May 12, 2025 |
 | ✅ | Check proper error messages and handling | Implemented robust error handling with descriptive messages | | May 12, 2025 |
 | ✅ | Implement connection status indicators | Added connection logging and status messages | | May 12, 2025 |
-| ⏱️ | Test edge cases (large documents, high frequency changes) | | | |
 
 ### Phase 6: Deployment and Publication
 
@@ -103,14 +102,6 @@ These are optional optimizations that can be implemented after the core function
 | ✅ | Write tests for subcollection path parsing | Created comprehensive unit tests for path validation and reference creation | High | May 11, 2025 |
 | 🔄 | Create example workflows using subcollections | Working on examples showing subcollection usage | Medium | |
 | 🔄 | Update README with subcollection usage information | Working on adding examples and updated parameter descriptions | Medium | |
-
-### Reconnection Strategy
-
-| Status | Task | Notes | Priority | Completion Date |
-|--------|------|-------|----------|----------------|
-| ⏱️ | Create utility function for calculating retry intervals | | Medium | |
-| ⏱️ | Add max retry attempts configuration | | Medium | |
-| ⏱️ | Implement backoff logic in listener error handlers | | High | |
 
 ### Throttling System
 
@@ -178,7 +169,7 @@ For tasks that are blocked:
 1. Change status to ⚠️
 2. Note what is blocking the task in the "Notes" column
 
-## Weekly Progress Updates
+## Progress Updates
 
 ### Week 1 (Starting Date: May 11, 2025)
 

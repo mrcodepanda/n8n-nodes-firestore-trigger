@@ -12,7 +12,7 @@ process.env.FIRESTORE_EMULATOR_HOST = 'localhost:9099';
 // Initialize Firebase if not already initialized
 if (!firebase.apps.length) {
   firebase.initializeApp({
-    projectId: 'n8n-firestore-trigger-test',
+    projectId: 'n8n-nodes-firestore-trigger-test',
   });
 }
 
@@ -35,7 +35,7 @@ const mockHookFunctions = {
   },
   getCredentials: async () => {
     return {
-      projectId: 'n8n-firestore-trigger-test',
+      projectId: 'n8n-nodes-firestore-trigger-test',
       authenticationMethod: 'applicationDefault',
     };
   },

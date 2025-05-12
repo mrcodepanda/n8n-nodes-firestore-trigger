@@ -2,7 +2,7 @@
 
 # Helper script to set up and start the Firebase emulator for testing
 
-echo "Setting up Firebase emulator for testing the n8n-firestore-trigger node..."
+echo "Setting up Firebase emulator for testing the n8n-nodes-firestore-trigger node..."
 
 # Check if firebase CLI is installed
 if ! command -v firebase &> /dev/null
@@ -20,7 +20,7 @@ if [ ! -f ".firebaserc" ]; then
     echo "Initializing Firebase project for emulator..."
     echo '{
   "projects": {
-    "default": "n8n-firestore-trigger-test"
+    "default": "n8n-nodes-firestore-trigger-test"
   }
 }' > .firebaserc
 fi

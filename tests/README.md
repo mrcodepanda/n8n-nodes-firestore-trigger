@@ -27,7 +27,7 @@ The tests are organized into the following files:
 
 Run all Jest tests:
 ```bash
-cd /home/saggarwal/projects/n8n-firestore-trigger
+cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
 pnpm test
 ```
 
@@ -176,7 +176,7 @@ To test the node with your local n8n instance:
 
 1. Build the package:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm build
    ```
 

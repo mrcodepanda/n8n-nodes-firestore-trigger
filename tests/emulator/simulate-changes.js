@@ -2,7 +2,7 @@ const firebase = require('firebase-admin');
 
 // Configure the Firebase app with the emulator
 firebase.initializeApp({
-  projectId: 'n8n-firestore-trigger-test',
+  projectId: 'n8n-nodes-firestore-trigger-test',
 });
 
 // Point to the Firestore emulator

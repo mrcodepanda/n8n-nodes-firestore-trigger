@@ -29,13 +29,13 @@ All credential configurations have been successfully validated with a real Fireb
 
 1. Build the package:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm build
    ```
 
 2. Link the package to your local n8n instance:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm link --global
    
    cd ~/.n8n/custom

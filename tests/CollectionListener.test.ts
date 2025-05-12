@@ -29,7 +29,7 @@ describe('Firestore Collection Listener', () => {
 		});
 
 		mockTriggerFunctions.getCredentials = jest.fn().mockResolvedValue({
-			projectId: 'n8n-firestore-trigger-test',
+			projectId: 'n8n-nodes-firestore-trigger-test',
 			authenticationMethod: 'applicationDefault',
 		});
 

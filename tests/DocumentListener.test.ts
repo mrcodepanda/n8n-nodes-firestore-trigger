@@ -29,7 +29,7 @@ describe('Firestore Document Listener', () => {
 		});
 
 		mockTriggerFunctions.getCredentials = jest.fn().mockResolvedValue({
-			projectId: 'n8n-firestore-trigger-test',
+			projectId: 'n8n-nodes-firestore-trigger-test',
 			authenticationMethod: 'applicationDefault',
 		});
 
@@ -280,7 +280,7 @@ describe('Firestore Document Listener', () => {
 	it('should support custom database ID from credentials', async () => {
 		// Update credentials to include a custom database ID
 		mockTriggerFunctions.getCredentials = jest.fn().mockResolvedValue({
-			projectId: 'n8n-firestore-trigger-test',
+			projectId: 'n8n-nodes-firestore-trigger-test',
 			authenticationMethod: 'applicationDefault',
 			databaseId: 'custom-database'
 		});

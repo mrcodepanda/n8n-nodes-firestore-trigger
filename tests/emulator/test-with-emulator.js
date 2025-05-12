@@ -22,7 +22,7 @@ const mockHookFunctions = {
   },
   getCredentials: async () => {
     return {
-      projectId: 'n8n-firestore-trigger-test',
+      projectId: 'n8n-nodes-firestore-trigger-test',
       authenticationMethod: 'applicationDefault',
     };
   },

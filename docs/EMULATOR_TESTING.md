@@ -1,6 +1,6 @@
 # Firestore Emulator Testing Guide
 
-This guide explains how to use the Firebase emulator to test the n8n-firestore-trigger node without requiring a real Firebase project.
+This guide explains how to use the Firebase emulator to test the n8n-nodes-firestore-trigger node without requiring a real Firebase project.
 
 ## Testing Status
 
@@ -20,7 +20,7 @@ The node has been thoroughly tested using both the Firebase emulator and a real 
 
 1. Clone the repository and navigate to the project directory:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    ```
 
 2. Install dependencies:
@@ -41,13 +41,13 @@ The node has been thoroughly tested using both the Firebase emulator and a real 
 
    This script will:
    - Check if Firebase CLI is installed
-   - Create a local Firebase project configuration with project ID 'n8n-firestore-trigger-test'
+   - Create a local Firebase project configuration with project ID 'n8n-nodes-firestore-trigger-test'
    - Start the Firestore emulator on port 9099
    - Start the Emulator UI on port 4000
 
 5. Once the emulator is running, open a new terminal window and seed it with test data:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm run emulator:seed
    ```
 
@@ -65,7 +65,7 @@ The project includes several automated test scripts for different listener types
 
 1. Build the node package:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm build
    ```
 
@@ -94,7 +94,7 @@ The project includes several automated test scripts for different listener types
 
 1. Build the node package:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm build
    ```
 
@@ -125,7 +125,7 @@ The project includes several automated test scripts for different listener types
 
 1. Link your package to n8n:
    ```bash
-   cd /home/saggarwal/projects/n8n-firestore-trigger
+   cd /home/saggarwal/projects/n8n-nodes-firestore-trigger
    pnpm link --global
    
    cd ~/.n8n/custom
@@ -146,7 +146,7 @@ The project includes several automated test scripts for different listener types
    - Create a new workflow
    - Add the "Firestore" node (Note: The node appears as "Firestore" in the UI rather than "Firestore Trigger")
    - Configure it to use Application Default Credentials (the emulator doesn't require real credentials)
-   - Enter "n8n-firestore-trigger-test" as the Project ID
+   - Enter "n8n-nodes-firestore-trigger-test" as the Project ID
    - Set Operation to "Listen to Collection"
    - Enter "test-collection" as the collection path
    - Select all events (Added, Modified, Removed)
