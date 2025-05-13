@@ -1,5 +1,9 @@
 # n8n-nodes-firestore-trigger
 
+[![CI](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/actions/workflows/ci.yml/badge.svg)](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/n8n-nodes-firestore-trigger.svg)](https://www.npmjs.com/package/n8n-nodes-firestore-trigger)
+[![License](https://img.shields.io/npm/l/n8n-nodes-firestore-trigger.svg)](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/blob/master/LICENSE.md)
+
 This is an n8n community node. It lets you use Firebase Firestore in your n8n workflows as a trigger source.
 
 Firebase Firestore is a flexible, scalable NoSQL cloud database that lets you store and sync data between your users in real-time. This node allows you to listen for changes in your Firestore database and automatically trigger workflows when data is added, modified, or removed.

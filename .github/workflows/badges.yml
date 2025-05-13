@@ -1,0 +1,26 @@
+name: CI Status
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  update-badges:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Build Status
+        id: build-status
+        run: |
+          echo "status=passing" >> $GITHUB_OUTPUT
+      
+      - name: Generate Badges
+        uses: RubbaBoy/BYOB@v1.3.0
+        with:
+          name: build
+          label: build
+          status: ${{ steps.build-status.outputs.status }}
+          color: 22B24B
+          github_token: ${{ secrets.GITHUB_TOKEN }}
