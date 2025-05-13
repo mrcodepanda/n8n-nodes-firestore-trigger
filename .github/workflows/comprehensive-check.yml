@@ -1,0 +1,50 @@
+name: Comprehensive Check
+
+on:
+  pull_request:
+    branches: ['*']
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Verify Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.1.4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Format check
+        run: pnpm format
+      
+      - name: Lint
+        run: pnpm lint
+      
+      - name: Build
+        run: pnpm build
+      
+      - name: Test
+        run: pnpm jest --config jest.config.ci.js
+        env:
+          CI: true
+          FIREBASE_PROJECT_ID: mock-project-id
+          FIRESTORE_EMULATOR_HOST: localhost:8080
+      
+      - name: Check publish readiness
+        run: pnpm prepare-publish
+      
+      - name: Dry run publish
+        run: pnpm publish-dry-run

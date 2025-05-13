@@ -1,5 +1,11 @@
 // Jest setup file
 
+// Set up environment variables for CI
+if (process.env.CI) {
+  process.env.FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'mock-project-id';
+  process.env.FIRESTORE_EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST || 'localhost:8080';
+}
+
 // Mock firebase-admin
 jest.mock('firebase-admin', () => require('./mocks/firebase-admin'));
 
