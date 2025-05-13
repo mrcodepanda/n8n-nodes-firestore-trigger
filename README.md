@@ -18,6 +18,17 @@ Firebase Firestore is a flexible, scalable NoSQL cloud database that lets you st
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
+### Self-hosted n8n:
+
+- Go to `Settings` by clicking on 3-dots at the bottom left.
+- Navigate to `Community Nodes` section on the left.
+- Click on `Install` or `Add Community Nodes` button.
+- Type `n8n-nodes-firestore-trigger`, accept the disclaimer and click `Install`.
+
+The trigger node will now be available in your n8n instance by searching for `Firestore`.
+
+### Locally hosted n8n instance:
+
 ```bash
 # Install from npm
 pnpm add n8n-nodes-firestore-trigger
