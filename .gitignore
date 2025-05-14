@@ -9,7 +9,18 @@ build/
 tmp/
 
 # Firebase credentials and config
+# Ignore all service account and credential files
 *serviceAccountKey*.json
+*service-account*.json
+*firebase-credentials*.json
+*mock-service-account*.json
+*mock-credentials*.json
+*credentials.json
+**/*credentials*.json
+**/firebase-credentials.json
+tests/mocks/firebase-credentials.json
+
+# Firebase config and debug files
 .firebaserc
 firebase-debug.log
 firebase-debug.*.log
@@ -28,6 +39,8 @@ workflow-backups/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.jest
+.env.test
 
 # Log files
 logs/
@@ -58,9 +71,15 @@ lerna-debug.log*
 ehthumbs.db
 Thumbs.db
 
-# Test coverage directories
+# Test coverage and test artifacts
 coverage/
 .nyc_output/
+tests/.firebase/
+tests/temp/
+tests/artifacts/
+
+# Temporarily nested or legacy test directories
+tests/tests/
 
 # Lock files - uncomment if you prefer to not share them
 # package-lock.json
@@ -85,3 +104,6 @@ local-test-data/
 notes/
 *.secret.*
 .cache/
+
+**/.claude/settings.local.json
+CLAUDE.md

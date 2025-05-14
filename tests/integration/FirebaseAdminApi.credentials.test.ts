@@ -1,4 +1,4 @@
-import { FirebaseAdminApi } from '../credentials/FirebaseAdminApi.credentials';
+import { FirebaseAdminApi } from '../../credentials/FirebaseAdminApi.credentials';
 
 describe('FirebaseAdminApi Credentials', () => {
 	let firebaseAdminApi: FirebaseAdminApi;

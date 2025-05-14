@@ -1,6 +1,6 @@
 /**
- * Mock implementation for firebase-admin/firestore module
- * This file provides mock functionality for Firestore in tests
+ * Consolidated Firebase Admin mock
+ * Provides mocks for both firebase-admin and firebase-admin/firestore
  */
 
 // Define an explicit type for onSnapshot to include onNext and onError properties
@@ -17,6 +17,8 @@ interface OnSnapshotMock extends jest.Mock {
 
 // Create mock functions
 const mockWhere = jest.fn().mockReturnThis();
+const mockLimit = jest.fn().mockReturnThis();
+const mockOrderBy = jest.fn().mockReturnThis();
 const mockUnsubscribe = jest.fn();
 
 /**
@@ -76,7 +78,7 @@ const mockOnSnapshot: OnSnapshotMock = jest.fn((...args) => {
   return mockUnsubscribe;
 });
 
-// Doc mock
+// Document mock
 const mockDoc = jest.fn().mockReturnValue({
   onSnapshot: mockOnSnapshot,
   get: jest.fn().mockResolvedValue({
@@ -88,33 +90,113 @@ const mockDoc = jest.fn().mockReturnValue({
   })
 });
 
+// Collection mock
+const mockCollection = jest.fn().mockReturnValue({
+  doc: mockDoc,
+  where: mockWhere,
+  limit: mockLimit,
+  orderBy: mockOrderBy,
+  onSnapshot: mockOnSnapshot
+});
+
 // Firestore mock instance
 const firestoreMock = {
   _settings: {
     databaseId: '(default)'
   },
-  collection: jest.fn().mockReturnValue({
-    doc: mockDoc,
-    where: mockWhere,
-    onSnapshot: mockOnSnapshot
-  })
+  collection: mockCollection
 };
 
-// Export getFirestore function and helper methods for tests
+// Firebase Admin App mock
+const appMock = {
+  delete: jest.fn().mockResolvedValue(undefined),
+  name: 'test-app'
+};
+
+// Helper to create standard mock test data
+const createTestData = () => ({
+  document: {
+    exists: true,
+    data: () => ({ id: 'test-doc', value: 'test-value' }),
+    id: 'test-doc',
+    ref: { path: 'test-collection/test-doc' },
+    metadata: { hasPendingWrites: false, fromCache: false }
+  },
+  documentChange: {
+    type: 'added',
+    doc: {
+      id: 'test-doc',
+      data: () => ({ name: 'Test Document', value: 100 }),
+      ref: { path: 'test-collection/test-doc' },
+      metadata: {
+        hasPendingWrites: false,
+        fromCache: false
+      }
+    }
+  },
+  collectionSnapshot: {
+    docChanges: () => [{
+      type: 'added',
+      doc: {
+        id: 'test-doc',
+        data: () => ({ name: 'Test Document', value: 100 }),
+        ref: { path: 'test-collection/test-doc' },
+        metadata: {
+          hasPendingWrites: false,
+          fromCache: false
+        }
+      }
+    }]
+  }
+});
+
+// Reset all mocks to a clean state
+const resetMocks = () => {
+  mockWhere.mockClear();
+  mockLimit.mockClear();
+  mockOrderBy.mockClear();
+  mockOnSnapshot.mockClear();
+  mockUnsubscribe.mockClear();
+  mockDoc.mockClear();
+  mockCollection.mockClear();
+  appMock.delete.mockClear();
+  firestoreMock._settings = { databaseId: '(default)' };
+};
+
+// Set up exports
+export {
+  // Firestore mocks
+  firestoreMock,
+  mockWhere,
+  mockLimit,
+  mockOrderBy,
+  mockOnSnapshot,
+  mockUnsubscribe,
+  mockDoc,
+  mockCollection,
+  
+  // App mocks
+  appMock,
+  
+  // Test data
+  createTestData,
+  
+  // Utilities
+  resetMocks
+};
+
+// Module exports for direct Jest mocking
 module.exports = {
   getFirestore: jest.fn().mockReturnValue(firestoreMock),
-  __getWhereMock: () => mockWhere,
-  __getOnSnapshotMock: () => mockOnSnapshot,
-  __getFirestoreMock: () => firestoreMock,
-  __getMockUnsubscribe: () => mockUnsubscribe,
-  __getMockDoc: () => mockDoc,
-  __resetMocks: () => {
-    mockWhere.mockClear();
-    mockOnSnapshot.mockClear();
-    mockUnsubscribe.mockClear();
-    mockDoc.mockClear();
-    firestoreMock.collection.mockClear();
-    firestoreMock._settings = { databaseId: '(default)' };
-    module.exports.getFirestore.mockClear();
+  credential: {
+    cert: jest.fn().mockReturnValue({}),
+    applicationDefault: jest.fn().mockReturnValue({})
+  },
+  initializeApp: jest.fn().mockReturnValue(appMock),
+  firestore: {
+    FieldValue: {
+      serverTimestamp: jest.fn().mockReturnValue("timestamp-value"),
+      increment: jest.fn(val => `increment-${val}`)
+    }
   }
 };
