@@ -1,15 +1,24 @@
-import { 
-  parsePath, 
-  findFirstParameterParentPath, 
-  resolvePath, 
-  getParentDocumentPath,
-  validateCollectionPath
-} from '../nodes/FirestoreTrigger/GenericFunctions';
+import { PathHandler } from '../../src/PathHandler';
 
+/**
+ * Test suite for Subcollection Support Functions
+ * These tests validate the utility functions used for handling 
+ * subcollection paths and path parameters using the PathHandler class
+ */
 describe('Subcollection Support Functions', () => {
+  let pathHandler: PathHandler;
+
+  beforeEach(() => {
+    pathHandler = new PathHandler();
+  });
+
+  /**
+   * Tests for parsePath function
+   * This function analyzes path structure and identifies parameters
+   */
   describe('parsePath', () => {
     it('should correctly parse a simple collection path', () => {
-      const result = parsePath('users');
+      const result = pathHandler.parsePath('users');
       
       expect(result.segments.length).toBe(1);
       expect(result.segments[0].value).toBe('users');
@@ -20,7 +29,7 @@ describe('Subcollection Support Functions', () => {
     });
     
     it('should correctly parse a document path', () => {
-      const result = parsePath('users/user123');
+      const result = pathHandler.parsePath('users/user123');
       
       expect(result.segments.length).toBe(2);
       expect(result.segments[0].value).toBe('users');
@@ -33,7 +42,7 @@ describe('Subcollection Support Functions', () => {
     });
     
     it('should correctly parse a path with parameters', () => {
-      const result = parsePath('users/:userId/orders');
+      const result = pathHandler.parsePath('users/:userId/orders');
       
       expect(result.segments.length).toBe(3);
       expect(result.segments[0].value).toBe('users');
@@ -49,7 +58,7 @@ describe('Subcollection Support Functions', () => {
     });
     
     it('should correctly parse a complex path with multiple parameters', () => {
-      const result = parsePath('users/:userId/orders/:orderId/items');
+      const result = pathHandler.parsePath('users/:userId/orders/:orderId/items');
       
       expect(result.segments.length).toBe(5);
       expect(result.segments[0].value).toBe('users');
@@ -70,36 +79,46 @@ describe('Subcollection Support Functions', () => {
     });
   });
   
+  /**
+   * Tests for findFirstParameterParentPath function
+   * This function finds the parent path of the first parameter in a path
+   */
   describe('findFirstParameterParentPath', () => {
     it('should return null for a path without parameters', () => {
-      const result = findFirstParameterParentPath('users/user123/orders');
+      const result = pathHandler.findFirstParameterParentPath('users/user123/orders');
       expect(result).toBeNull();
     });
     
     it('should return the parent path for a path with parameters', () => {
-      const result = findFirstParameterParentPath('users/:userId/orders');
+      const result = pathHandler.findFirstParameterParentPath('users/:userId/orders');
       expect(result).toBe('users');
     });
     
     it('should handle parameters in the middle of the path', () => {
-      const result = findFirstParameterParentPath('chats/:chatId/messages/:messageId');
+      const result = pathHandler.findFirstParameterParentPath('chats/:chatId/messages/:messageId');
       expect(result).toBe('chats');
     });
     
     it('should return null if the parameter is the first segment', () => {
-      const result = findFirstParameterParentPath(':collection/documents');
+      const result = pathHandler.findFirstParameterParentPath(':collection/documents');
       expect(result).toBeNull();
     });
   });
   
-  describe('resolvePath', () => {
+  /**
+   * Tests for resolvePattern function
+   * This function replaces path parameters with actual values
+   */
+  describe('resolvePattern', () => {
     it('should resolve a simple path with one parameter', () => {
-      const result = resolvePath('users/:userId/orders', { userId: '123' });
+      const pattern = pathHandler.parseDynamicPath('users/:userId/orders');
+      const result = pathHandler.resolvePattern(pattern, { userId: '123' });
       expect(result).toBe('users/123/orders');
     });
     
     it('should resolve a complex path with multiple parameters', () => {
-      const result = resolvePath('users/:userId/orders/:orderId/items', { 
+      const pattern = pathHandler.parseDynamicPath('users/:userId/orders/:orderId/items');
+      const result = pathHandler.resolvePattern(pattern, { 
         userId: '123', 
         orderId: '456' 
       });
@@ -107,48 +126,64 @@ describe('Subcollection Support Functions', () => {
     });
     
     it('should throw an error if a parameter value is missing', () => {
+      const pattern = pathHandler.parseDynamicPath('users/:userId/orders');
       expect(() => {
-        resolvePath('users/:userId/orders', {});
-      }).toThrow('Missing value for parameter "userId"');
+        pathHandler.resolvePattern(pattern, {});
+      }).toThrow(/Missing value for parameter/);
     });
   });
   
-  describe('getParentDocumentPath', () => {
+  /**
+   * Tests for getParentPath function
+   * This function gets the parent document path for a subcollection
+   */
+  describe('getParentPath', () => {
     it('should return null for a top-level collection', () => {
-      const result = getParentDocumentPath('users');
+      const result = pathHandler.getParentPath('users');
       expect(result).toBeNull();
     });
     
     it('should return the parent document path for a subcollection', () => {
-      const result = getParentDocumentPath('users/123/orders');
+      const result = pathHandler.getParentPath('users/123/orders');
       expect(result).toBe('users/123');
     });
     
     it('should work for deeply nested collections', () => {
-      const result = getParentDocumentPath('users/123/orders/456/items');
+      const result = pathHandler.getParentPath('users/123/orders/456/items');
       expect(result).toBe('users/123/orders/456');
     });
   });
   
-  describe('validateCollectionPath', () => {
+  /**
+   * Tests for isCollection function
+   * This function verifies that a path is a valid collection path
+   */
+  describe('isCollection', () => {
     it('should validate a top-level collection', () => {
-      expect(validateCollectionPath('users')).toBe(true);
+      expect(pathHandler.isCollection('users')).toBe(true);
     });
     
     it('should validate a subcollection', () => {
-      expect(validateCollectionPath('users/123/orders')).toBe(true);
+      expect(pathHandler.isCollection('users/123/orders')).toBe(true);
     });
     
     it('should validate a deeply nested collection', () => {
-      expect(validateCollectionPath('users/123/orders/456/items')).toBe(true);
+      expect(pathHandler.isCollection('users/123/orders/456/items')).toBe(true);
     });
     
     it('should fail for a document path', () => {
-      expect(validateCollectionPath('users/123')).toBe(false);
+      expect(pathHandler.isCollection('users/123')).toBe(false);
     });
     
     it('should handle empty paths', () => {
-      expect(validateCollectionPath('')).toBe(false);
+      // The PathHandler now throws for empty paths, so we need to test via a try/catch
+      try {
+        pathHandler.isCollection('');
+        fail('Should have thrown an error for empty path');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect((error as Error).message).toContain('Cannot normalize null or undefined path');
+      }
     });
   });
 });
