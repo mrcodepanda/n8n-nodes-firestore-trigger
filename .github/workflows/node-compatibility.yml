@@ -72,7 +72,7 @@ jobs:
         env:
           CI: true
           TEST_MODE: ci
-          NODE_ENV: test
+          NODE_ENV: production
           FIREBASE_PROJECT_ID: mock-project-id
           FIRESTORE_EMULATOR_HOST: localhost:8080
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/tests/mocks/firebase/mock-service-account.json

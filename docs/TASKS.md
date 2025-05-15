@@ -38,9 +38,9 @@ This document tracks the progress of implementing the Firebase Firestore Trigger
 
 | Status | Task | Notes | Assigned to | Completion Date |
 |--------|------|-------|-------------|----------------|
-| ✅ | Create `nodes/FirestoreTrigger/GenericFunctions.ts` for Firebase utility functions | Implemented app initialization and cleanup | | May 11, 2025 |
+| ✅ | Create `nodes/Firestore/GenericFunctions.ts` for Firebase utility functions | Implemented app initialization and cleanup | | May 11, 2025 |
 | ✅ | Implement Firebase app initialization and cleanup functions | | | May 11, 2025 |
-| ✅ | Create `nodes/FirestoreTrigger/FirestoreTrigger.node.ts` file | | | May 11, 2025 |
+| ✅ | Create `nodes/Firestore/Firestore.node.ts` file | | | May 11, 2025 |
 | ✅ | Implement node description and UI properties | | | May 11, 2025 |
 | ✅ | Build the node's trigger function with connection management | | | May 11, 2025 |
 | ✅ | Implement document listeners | | | May 11, 2025 |

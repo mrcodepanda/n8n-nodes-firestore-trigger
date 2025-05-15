@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-firestore-trigger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "n8n node to trigger workflows from Firebase Firestore changes",
   "keywords": [
     "n8n-community-node-package",
@@ -60,7 +60,7 @@
       "dist/credentials/FirebaseAdminApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/FirestoreTrigger/FirestoreTrigger.node.js"
+      "dist/nodes/Firestore/FirestoreTrigger.node.js"
     ]
   },
   "devDependencies": {

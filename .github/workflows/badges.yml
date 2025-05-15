@@ -1,8 +1,11 @@
-name: CI Status
+name: Status Badges
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Main CI Workflow"]
     branches: [master]
+    types:
+      - completed
 
 jobs:
   update-badges:
@@ -11,10 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Check Build Status
+      - name: Get Build Status
         id: build-status
         run: |
-          echo "status=passing" >> $GITHUB_OUTPUT
+          if [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            echo "status=passing" >> $GITHUB_OUTPUT
+            echo "color=22B24B" >> $GITHUB_OUTPUT
+          else
+            echo "status=failing" >> $GITHUB_OUTPUT
+            echo "color=E11D21" >> $GITHUB_OUTPUT
+          fi
       
       - name: Generate Badges
         uses: RubbaBoy/BYOB@v1.3.0
@@ -22,5 +31,5 @@ jobs:
           name: build
           label: build
           status: ${{ steps.build-status.outputs.status }}
-          color: 22B24B
+          color: ${{ steps.build-status.outputs.color }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

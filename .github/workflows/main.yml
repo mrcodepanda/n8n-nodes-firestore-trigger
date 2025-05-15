@@ -1,4 +1,4 @@
-name: Build Status
+name: Main CI Workflow
 
 on:
   push:
@@ -8,9 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build
+  setup:
+    name: Setup Environment
     runs-on: ubuntu-latest
+    outputs:
+      firebase_setup: ${{ steps.firebase-setup.outputs.complete }}
     
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +32,93 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       # Set up mock credentials for Firebase
-      - name: Set up mock credentials
+      - name: Set up Firebase mock credentials
+        id: firebase-setup
+        run: |
+          mkdir -p ./.firebase
+          
+          # Create full service account credentials with all required fields
+          cat > ./.firebase/mock-credentials.json << EOF
+          {
+            "type": "service_account",
+            "project_id": "mock-project-id",
+            "private_key_id": "mock-key-id",
+            "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmxxx\\n-----END PRIVATE KEY-----\\n",
+            "client_email": "mock-service-account@mock-project-id.iam.gserviceaccount.com",
+            "client_id": "123456789012345678901",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/mock-service-account%40mock-project-id.iam.gserviceaccount.com",
+            "universe_domain": "googleapis.com"
+          }
+          EOF
+          
+          # Create the mocks directory with the new file structure
+          mkdir -p ./tests/mocks/firebase
+          
+          # Copy the credential file to the test mocks directory
+          cp ./.firebase/mock-credentials.json ./tests/mocks/firebase/mock-service-account.json
+          
+          # Ensure legacy path for compatibility
+          mkdir -p ./tests/mocks
+          cp ./.firebase/mock-credentials.json ./tests/mocks/mock-service-account.json
+          
+          echo "complete=true" >> $GITHUB_OUTPUT
+
+  lint:
+    name: Lint
+    needs: setup
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.1.4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Format check
+        run: pnpm format
+        
+      - name: Run linting
+        run: pnpm lint
+        env:
+          NODE_ENV: production
+
+  build:
+    name: Build
+    needs: setup
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.1.4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Set up Firebase mock credentials
         run: |
           mkdir -p ./.firebase
           
@@ -70,35 +158,19 @@ jobs:
           name: dist
           path: dist/
           retention-days: 7
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
       
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9.1.4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      - name: Run linting
-        run: pnpm lint
+      - name: Verify Google credentials
+        run: node tests/ci-credential-test.js
         env:
-          NODE_ENV: test
+          CI: true
+          TEST_MODE: ci
+          NODE_ENV: production
+          FIREBASE_PROJECT_ID: mock-project-id
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/tests/mocks/firebase/mock-service-account.json
 
   test:
     name: Test
+    needs: [lint, build]
     runs-on: ubuntu-latest
     
     steps:
@@ -119,7 +191,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       
       # Set up mock credentials for Firebase
-      - name: Set up mock credentials
+      - name: Set up Firebase mock credentials
         run: |
           mkdir -p ./.firebase
           
@@ -159,4 +231,5 @@ jobs:
           FIREBASE_PROJECT_ID: mock-project-id
           FIRESTORE_EMULATOR_HOST: localhost:8080
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/tests/mocks/firebase/mock-service-account.json
-          NODE_ENV: test
+          NODE_ENV: production
+          AUTH_METHOD: serviceAccount

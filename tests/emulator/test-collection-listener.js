@@ -4,7 +4,7 @@
  */
 
 const firebase = require('firebase-admin');
-const { FirestoreTrigger } = require('../../dist/nodes/FirestoreTrigger/FirestoreTrigger.node');
+const { FirestoreTrigger } = require('../../dist/nodes/Firestore/FirestoreTrigger.node');
 
 // Configure and point to the Firebase emulator
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:9099';
