@@ -4,6 +4,7 @@ import { getFirestore as adminGetFirestore } from 'firebase-admin/firestore';
 import { IDataObject } from 'n8n-workflow';
 import { App } from 'firebase-admin/app';
 import { Firestore } from 'firebase-admin/firestore';
+import { logger } from './Logger';
 
 /**
  * Service class to handle Firebase application management and operations
@@ -61,7 +62,7 @@ export class FirebaseService {
 					
 					appConfig.credential = cert(serviceAccountJson);
 				} catch (error) {
-					console.error('Error parsing service account JSON:', error);
+					logger.error('Error parsing service account JSON:', error);
 					throw new Error(`Invalid service account JSON: ${(error as Error).message}`);
 				}
 			} else {
@@ -69,7 +70,7 @@ export class FirebaseService {
 				try {
 					appConfig.credential = admin.credential.applicationDefault();
 				} catch (error) {
-					console.error('Error using application default credentials:', error);
+					logger.error('Error using application default credentials:', error);
 					throw new Error(`Could not load application default credentials. Make sure to set up ADC by running 'gcloud auth application-default login' or set the GOOGLE_APPLICATION_CREDENTIALS environment variable. Error: ${(error as Error).message}`);
 				}
 			}
@@ -83,11 +84,11 @@ export class FirebaseService {
 				
 				return app;
 			} catch (initError) {
-				console.error('Error initializing Firebase app:', initError);
+				logger.error('Error initializing Firebase app:', initError);
 				throw new Error(`Failed to initialize Firebase app: ${(initError as Error).message}`);
 			}
 		} catch (error) {
-			console.error('Firebase authentication error:', error);
+			logger.error('Firebase authentication error:', error);
 			if ((error as Error).message.includes('default credentials')) {
 				throw new Error(`Authentication failed: Could not load the default credentials. Make sure you have the correct authentication method selected in your credentials configuration. For 'Service Account' method, provide a valid service account JSON. For 'Application Default Credentials' method, follow the guide at https://cloud.google.com/docs/authentication/getting-started`);
 			} else if ((error as Error).message.includes('service account')) {
@@ -132,24 +133,24 @@ export class FirebaseService {
 	 * @returns Promise that resolves when cleanup is complete
 	 */
 	public async cleanupApp(projectId: string): Promise<void> {
-		console.log(`Cleaning up Firebase app for project: ${projectId}`);
+		logger.debug(`Cleaning up Firebase app for project: ${projectId}`);
 		if (this.firebaseApps[projectId]) {
-			console.log(`Found Firebase app for project: ${projectId}, deleting app`);
+			logger.debug(`Found Firebase app for project: ${projectId}, deleting app`);
 			// Cast to access the delete method that exists but is not in the type definition
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			return (this.firebaseApps[projectId] as any).delete()
 				.then(() => {
-					console.log(`Successfully deleted Firebase app for project: ${projectId}`);
+					logger.debug(`Successfully deleted Firebase app for project: ${projectId}`);
 					delete this.firebaseApps[projectId];
 				})
 				.catch((error: Error) => {
-					console.error(`Error deleting Firebase app for project: ${projectId}:`, error);
+					logger.error(`Error deleting Firebase app for project: ${projectId}:`, error);
 					// Still remove from cache even if deletion fails
 					delete this.firebaseApps[projectId];
 					return Promise.resolve();
 				});
 		}
-		console.log(`No Firebase app found for project: ${projectId}, nothing to clean up`);
+		logger.debug(`No Firebase app found for project: ${projectId}, nothing to clean up`);
 		return Promise.resolve();
 	}
 

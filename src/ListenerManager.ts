@@ -1,6 +1,7 @@
 import { Firestore } from 'firebase-admin/firestore';
 import { IDataObject } from 'n8n-workflow';
 import { pathHandler } from './PathHandler';
+import { logger } from './Logger';
 
 // Type for pattern listeners
 export type PatternListener = {
@@ -60,12 +61,12 @@ export class ListenerManager {
 	public registerListener(listenerKey: string, unsubscribeFn: () => void): void {
 		// If there's an existing listener with this key, unsubscribe it first
 		if (this.activeListeners[listenerKey]) {
-			console.log(`Replacing existing listener for key: ${listenerKey}`);
+			logger.debug(`Replacing existing listener for key: ${listenerKey}`);
 			this.activeListeners[listenerKey]();
 		}
 
 		this.activeListeners[listenerKey] = unsubscribeFn;
-		console.log(`Registered listener with key: ${listenerKey}`);
+		logger.debug(`Registered listener with key: ${listenerKey}`);
 	}
 
 	/**
@@ -73,7 +74,7 @@ export class ListenerManager {
 	 */
 	public unregisterListener(listenerKey: string): void {
 		if (this.activeListeners[listenerKey]) {
-			console.log(`Unsubscribing listener with key: ${listenerKey}`);
+			logger.debug(`Unsubscribing listener with key: ${listenerKey}`);
 			this.activeListeners[listenerKey]();
 			delete this.activeListeners[listenerKey];
 		}
@@ -105,7 +106,7 @@ export class ListenerManager {
 			parentListenerKey,
 		};
 
-		console.log(`Registered pattern listener for pattern: ${patternKey}, doc: ${docPath}`);
+		logger.debug(`Registered pattern listener for pattern: ${patternKey}, doc: ${docPath}`);
 	}
 
 	/**
@@ -113,7 +114,7 @@ export class ListenerManager {
 	 */
 	public unregisterPatternListener(patternKey: string, docPath: string): void {
 		if (this.patternListeners[patternKey] && this.patternListeners[patternKey][docPath]) {
-			console.log(`Unregistering pattern listener for pattern: ${patternKey}, doc: ${docPath}`);
+			logger.debug(`Unregistering pattern listener for pattern: ${patternKey}, doc: ${docPath}`);
 			this.patternListeners[patternKey][docPath].listener();
 			delete this.patternListeners[patternKey][docPath];
 		}
@@ -124,7 +125,7 @@ export class ListenerManager {
 	 */
 	public cleanupPattern(patternKey: string): void {
 		if (this.patternListeners[patternKey]) {
-			console.log(`Cleaning up pattern listeners for: ${patternKey}`);
+			logger.debug(`Cleaning up pattern listeners for: ${patternKey}`);
 			
 			for (const docPath in this.patternListeners[patternKey]) {
 				if (Object.prototype.hasOwnProperty.call(this.patternListeners[patternKey], docPath)) {
@@ -140,12 +141,12 @@ export class ListenerManager {
 	 * Clean up all active listeners
 	 */
 	public cleanupAll(): void {
-		console.log(`Cleaning up all active listeners: ${Object.keys(this.activeListeners).length} listeners`);
+		logger.debug(`Cleaning up all active listeners: ${Object.keys(this.activeListeners).length} listeners`);
 		
 		// Clean up regular listeners
 		for (const key in this.activeListeners) {
 			if (Object.prototype.hasOwnProperty.call(this.activeListeners, key)) {
-				console.log(`Unsubscribing listener: ${key}`);
+				logger.debug(`Unsubscribing listener: ${key}`);
 				this.activeListeners[key]();
 				delete this.activeListeners[key];
 			}
@@ -218,7 +219,7 @@ export class ListenerManager {
 			// Using any for Firestore snapshot
 			(snapshot: any) => {
 				if (!snapshot.docChanges) {
-					console.warn('Snapshot does not have docChanges method');
+					logger.warn('Snapshot does not have docChanges method');
 					return;
 				}
 
@@ -230,7 +231,7 @@ export class ListenerManager {
 
 					try {
 						if (!change.doc) {
-							console.warn('Change does not have doc property');
+							logger.warn('Change does not have doc property');
 							return;
 						}
 
@@ -266,12 +267,12 @@ export class ListenerManager {
 							options.emitFn([{ json: docInfo }]);
 						}
 					} catch (docError) {
-						console.error('Error processing document change:', docError);
+						logger.error('Error processing document change:', docError);
 					}
 				});
 			},
 			(error: Error) => {
-				console.error('Firestore listener error:', error);
+				logger.error('Firestore listener error:', error);
 			}
 		);
 
@@ -341,17 +342,17 @@ export class ListenerManager {
 							options.emitFn([{ json: docInfo }]);
 						}
 					} catch (docError) {
-						console.error('Error processing document snapshot:', docError);
+						logger.error('Error processing document snapshot:', docError);
 					}
 				},
 				(error: Error) => {
-					console.error('Firestore document listener error:', error);
+					logger.error('Firestore document listener error:', error);
 				}
 			);
 			
 			return unsubscribeFn;
 		} catch (setupError) {
-			console.error('Error setting up document listener:', setupError);
+			logger.error('Error setting up document listener:', setupError);
 			throw setupError;
 		}
 	}
@@ -463,7 +464,7 @@ export class ListenerManager {
 					options
 				);
 			} catch (error) {
-				console.error(`Error creating subcollection listener for path "${fullSubcollectionPath}":`, error);
+				logger.error(`Error creating subcollection listener for path "${fullSubcollectionPath}":`, error);
 				throw new Error(`Failed to create subcollection listener: ${(error as Error).message}`);
 			}
 		};
@@ -603,7 +604,7 @@ export class ListenerManager {
 						});
 					},
 					(error: Error) => {
-						console.error(`Top-level collection listener error: ${parentDocumentId}`, error);
+						logger.error(`Top-level collection listener error: ${parentDocumentId}`, error);
 					}
 				);
 
@@ -617,7 +618,7 @@ export class ListenerManager {
 				parentDocRef = db.collection(parentCollectionPath).doc(parentDocumentId);
 			}
 		} catch (error) {
-			console.error(`Error handling parent document reference: ${(error as Error).message}`);
+			logger.error(`Error handling parent document reference: ${(error as Error).message}`);
 			throw new Error(`Error setting up listener for parent document: ${(error as Error).message}`);
 		}
 
@@ -664,7 +665,7 @@ export class ListenerManager {
 					}
 				},
 				(error: Error) => {
-					console.error(`Parent document listener error: ${parentPath}`, error);
+					logger.error(`Parent document listener error: ${parentPath}`, error);
 				}
 			);
 
@@ -672,7 +673,7 @@ export class ListenerManager {
 			this.registerListener(this.createDocumentListenerKey(parentPath), parentListener);
 
 		} catch (error) {
-			console.error(`Error processing static parent document: ${parentPath}`, error);
+			logger.error(`Error processing static parent document: ${parentPath}`, error);
 			throw new Error(`Error setting up listener for static parent document: ${(error as Error).message}`);
 		}
 	}
@@ -751,7 +752,7 @@ export class ListenerManager {
 					});
 				},
 				(error: Error) => {
-					console.error(`Parent collection listener error: ${parentCollectionPath}`, error);
+					logger.error(`Parent collection listener error: ${parentCollectionPath}`, error);
 				}
 			);
 
@@ -759,7 +760,7 @@ export class ListenerManager {
 			this.registerListener(this.createDocumentListenerKey(parentCollectionPath), parentCollectionListener);
 
 		} catch (error) {
-			console.error(`Error processing parameterized parent document: ${parentDocumentId}`, error);
+			logger.error(`Error processing parameterized parent document: ${parentDocumentId}`, error);
 			throw new Error(`Error setting up listener for parameterized parent document: ${(error as Error).message}`);
 		}
 	}
