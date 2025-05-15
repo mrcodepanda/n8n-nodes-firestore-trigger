@@ -69,11 +69,16 @@ export class FirestoreTrigger implements INodeType {
 				placeholder: 'users/:userId/orders',
 			},
 			{
-				displayName: 'Path Format Guide',
+				displayName: 'You can use colon parameters in paths (e.g., "collection/:param/subcollection") to create dynamic listeners that respond to any matching document. For fixed paths, use normal segments (e.g., "users/user123/orders").',
 				name: 'pathFormatGuide',
 				type: 'notice',
 				default: '',
-				description: 'You can use colon parameters in paths (e.g., "collection/:param/subcollection") to create dynamic listeners that respond to any matching document. For fixed paths, use normal segments (e.g., "users/user123/orders").',
+			},
+			{
+				displayName: 'For fixed paths, use normal segments (e.g., "users/user123/orders").',
+				name: 'pathFormatGuide',
+				type: 'notice',
+				default: '',
 			},
 			{
 				displayName: 'Document ID',
