@@ -14,6 +14,7 @@ import { Firestore } from 'firebase-admin/firestore';
 import { pathHandler } from '../../src/PathHandler';
 import { firebaseService } from '../../src/FirebaseService';
 import { listenerManager } from '../../src/ListenerManager';
+import { logger, LogLevel } from '../../src/Logger';
 
 export class FirestoreTrigger implements INodeType {
 	description: INodeTypeDescription = {
@@ -179,6 +180,13 @@ export class FirestoreTrigger implements INodeType {
 					},
 				],
 			},
+			{
+				displayName: 'Verbose Logging',
+				name: 'verboseLogging',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to log detailed debug information about the Firestore connection and events',
+			},
 		],
 	};
 
@@ -188,6 +196,12 @@ export class FirestoreTrigger implements INodeType {
 		// Get node parameters
 		const operation = this.getNodeParameter('operation') as string;
 		const collectionPath = this.getNodeParameter('collection') as string;
+		const verboseLogging = this.getNodeParameter('verboseLogging', false) as boolean;
+
+		// Configure logger based on node parameter
+		const logLevel = verboseLogging ? LogLevel.DEBUG : LogLevel.WARN;
+		logger.configure({ level: logLevel });
+
 		let documentId: string | undefined;
 
 		// Validate inputs
@@ -220,8 +234,8 @@ export class FirestoreTrigger implements INodeType {
 		const firebaseApp = firebaseService.initApp(credentials);
 		const db = firebaseService.getFirestore(firebaseApp, credentials.databaseId as string | undefined);
 
-		// Store the Firebase app for cleanup later
-		webhookData.firebaseApp = firebaseApp;
+		// Store only the project ID for cleanup later, not the entire app (which would cause circular reference issues)
+		webhookData.projectId = credentials.projectId as string;
 
 		// Set up unsubscribe function
 		let unsubscribeFn: (() => void) | undefined;
@@ -292,24 +306,22 @@ export class FirestoreTrigger implements INodeType {
 						(webhookData.unsubscribeFn as () => void)();
 					} catch (error) {
 						// Just log the error, don't throw during cleanup
-						console.error('Error during listener cleanup:', (error as Error).message);
+						logger.error('Error during listener cleanup:', (error as Error).message);
 					}
 					delete webhookData.unsubscribeFn;
 				}
 
 				// Clean up Firebase app if needed
-				if (webhookData.firebaseApp) {
+				if (webhookData.projectId) {
 					try {
-						// @ts-expect-error - Compatibility issue with App.delete()
-						if (webhookData.firebaseApp.delete) {
-							// @ts-expect-error - Compatibility issue with App.delete()
-							webhookData.firebaseApp.delete().catch((e: Error) => {
-								console.error('Error when cleaning up Firebase app:', e);
+						// Use the firebaseService to clean up the app by project ID
+						firebaseService.cleanupApp(webhookData.projectId as string)
+							.catch((e: Error) => {
+								logger.error('Error when cleaning up Firebase app:', e);
 							});
-						}
-						delete webhookData.firebaseApp;
+						delete webhookData.projectId;
 					} catch (error) {
-						console.error('Error when cleaning up Firebase app:', error);
+						logger.error('Error when cleaning up Firebase app:', error);
 					}
 				}
 			},

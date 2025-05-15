@@ -1,6 +1,7 @@
 import { CollectionReference, DocumentReference, Firestore, DocumentData } from 'firebase-admin/firestore';
 import { NodeOperationError } from 'n8n-workflow';
 import { pathHandler } from '../../src/PathHandler';
+import { logger } from '../../src/Logger';
 
 /**
  * Creates a Firestore reference for a collection or document path
@@ -17,7 +18,7 @@ export function createFirestoreReference(db: Firestore, path: string): Collectio
 	const analysis = pathHandler.parsePath(normalizedPath);
 	const segments = analysis.segments.map(segment => segment.value);
 	
-	console.log(`Creating Firestore reference for path: "${normalizedPath}" with ${segments.length} segments`);
+	logger.debug(`Creating Firestore reference for path: "${normalizedPath}" with ${segments.length} segments`);
 	
 	try {
 		// Using a more specific type for the reference
@@ -25,23 +26,23 @@ export function createFirestoreReference(db: Firestore, path: string): Collectio
 		let ref: any = db;
 		for (let i = 0; i < segments.length; i++) {
 			const segment = segments[i];
-			console.log(`Processing segment[${i}]: "${segment}"`);
+			logger.debug(`Processing segment[${i}]: "${segment}"`);
 			
 			if (i % 2 === 0) {
 				// Even indices (0, 2, 4...) are collection names
-				console.log(`Creating collection reference for: "${segment}"`);
+				logger.debug(`Creating collection reference for: "${segment}"`);
 				ref = ref.collection(segment);
 			} else {
 				// Odd indices (1, 3, 5...) are document IDs
-				console.log(`Creating document reference for: "${segment}"`);
+				logger.debug(`Creating document reference for: "${segment}"`);
 				ref = ref.doc(segment);
 			}
 		}
 		
-		console.log(`Successfully created Firestore reference for path: "${normalizedPath}"`);
+		logger.debug(`Successfully created Firestore reference for path: "${normalizedPath}"`);
 		return ref as CollectionReference<DocumentData> | DocumentReference<DocumentData>;
 	} catch (error) {
-		console.error(`Error creating Firestore reference for path "${normalizedPath}":`, error);
+		logger.error(`Error creating Firestore reference for path "${normalizedPath}":`, error);
 		throw new NodeOperationError(null, `Failed to create Firestore reference: ${(error as Error).message}`);
 	}
 }
@@ -64,10 +65,10 @@ export function getCollectionRef(db: Firestore, path: string): CollectionReferen
 	}
 	
 	try {
-		console.log(`Getting collection reference for path: "${normalizedPath}"`);
+		logger.debug(`Getting collection reference for path: "${normalizedPath}"`);
 		return createFirestoreReference(db, normalizedPath) as CollectionReference;
 	} catch (error) {
-		console.error(`Error getting collection reference for path "${normalizedPath}":`, error);
+		logger.error(`Error getting collection reference for path "${normalizedPath}":`, error);
 		throw new NodeOperationError(null, `Failed to get collection reference: ${(error as Error).message}`);
 	}
 }
@@ -95,11 +96,11 @@ export function getDocumentRef(db: Firestore, collectionPath: string, documentId
 	}
 	
 	try {
-		console.log(`Getting document reference for path: "${normalizedPath}/${normalizedDocId}"`);
+		logger.debug(`Getting document reference for path: "${normalizedPath}/${normalizedDocId}"`);
 		const collectionRef = getCollectionRef(db, normalizedPath);
 		return collectionRef.doc(normalizedDocId);
 	} catch (error) {
-		console.error(`Error getting document reference for path "${normalizedPath}/${normalizedDocId}":`, error);
+		logger.error(`Error getting document reference for path "${normalizedPath}/${normalizedDocId}":`, error);
 		throw new NodeOperationError(null, `Failed to get document reference: ${(error as Error).message}`);
 	}
 }
