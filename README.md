@@ -1,6 +1,6 @@
 # n8n-nodes-firestore-trigger
 
-[![CI](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/actions/workflows/ci.yml/badge.svg)](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/actions/workflows/ci.yml)
+[![Build Status](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/actions/workflows/main.yml/badge.svg)](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/actions/workflows/main.yml)
 [![npm version](https://img.shields.io/npm/v/n8n-nodes-firestore-trigger.svg)](https://www.npmjs.com/package/n8n-nodes-firestore-trigger)
 [![License](https://img.shields.io/npm/l/n8n-nodes-firestore-trigger.svg)](https://github.com/mrcodepanda/n8n-nodes-firestore-trigger/blob/master/LICENSE.md)
 

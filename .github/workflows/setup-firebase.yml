@@ -1,34 +1,14 @@
-name: Comprehensive Check
+name: Setup Firebase Mock
 
 on:
-  pull_request:
-    branches: ['*']
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
-  verify:
-    name: Verify Code Quality
+  setup:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9.1.4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      # Set up mock credentials for Firebase authentication
       - name: Set up mock credentials
+        id: setup-firebase
         run: |
           mkdir -p ./.firebase
           
@@ -58,31 +38,5 @@ jobs:
           # Ensure legacy path for compatibility
           mkdir -p ./tests/mocks
           cp ./.firebase/mock-credentials.json ./tests/mocks/mock-service-account.json
-      
-      - name: Format check
-        run: pnpm format
-      
-      - name: Lint
-        run: pnpm lint
-        env:
-          NODE_ENV: production
-      
-      - name: Build
-        run: pnpm build
-      
-      # Run tests with custom CI configuration
-      - name: Test
-        run: pnpm jest --config jest.config.ci.js
-        env:
-          CI: true
-          TEST_MODE: ci
-          NODE_ENV: production
-          FIREBASE_PROJECT_ID: mock-project-id
-          FIRESTORE_EMULATOR_HOST: localhost:8080
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/tests/mocks/firebase/mock-service-account.json
-      
-      - name: Check publish readiness
-        run: pnpm prepare-publish
-      
-      - name: Dry run publish
-        run: pnpm publish-dry-run
+          
+          echo "Completed Firebase mock setup"

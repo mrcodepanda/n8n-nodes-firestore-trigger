@@ -1,4 +1,4 @@
-import { FirestoreTrigger } from '../../nodes/FirestoreTrigger/FirestoreTrigger.node';
+import { FirestoreTrigger } from '../../nodes/Firestore/FirestoreTrigger.node';
 // Import the fixtures as needed for specific tests
 // import { errors, paths } from '../fixtures';
 import { setupTestEnvironment } from '../mocks/test-utils';
@@ -162,7 +162,7 @@ describe('Error Handling', () => {
       const boundTrigger = firestoreTrigger.trigger.bind(mockTriggerFunctions);
       
       // Call the trigger method - should throw error when collection parameter is missing
-      // The error is triggered in FirestoreTrigger.node.ts line ~194 where it checks for empty collection path
+      // The error is triggered in Firestore.node.ts line ~194 where it checks for empty collection path
       await expect(boundTrigger()).rejects.toThrow(/cannot be empty/i);
     });
     

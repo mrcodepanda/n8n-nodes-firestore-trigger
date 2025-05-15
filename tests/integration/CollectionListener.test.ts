@@ -1,4 +1,4 @@
-import { FirestoreTrigger } from '../../nodes/FirestoreTrigger/FirestoreTrigger.node';
+import { FirestoreTrigger } from '../../nodes/Firestore/FirestoreTrigger.node';
 import { createMockTriggerFunctions } from '../mocks/n8n/MockInterfaces';
 import { ITriggerFunctions } from 'n8n-workflow';
 

@@ -4,38 +4,25 @@ This document describes the GitHub workflows set up for the n8n-nodes-firestore-
 
 ## Available Workflows
 
-### 1. CI (ci.yml)
+### 1. Main CI Workflow (main.yml)
 
-This is the primary continuous integration workflow that runs on every push to the master branch and on pull requests targeting the master branch.
-
-**Triggers:**
-- Push to master branch
-- Pull requests targeting master branch
-
-**Jobs:**
-- `lint-and-build`: Runs linting, builds the package, and executes tests
-
-**Usage:**
-This workflow automatically runs on every push and pull request. You can see the status badge in the README.md file.
-
-### 2. Build Status (build-status.yml)
-
-A more detailed workflow that breaks down the checks into separate jobs for clearer status reporting.
+This is the primary continuous integration workflow that runs on pushes and pull requests.
 
 **Triggers:**
-- Push to master branch
+- Push to any branch
 - Pull requests targeting master branch
 - Manual trigger (workflow_dispatch)
 
 **Jobs:**
-- `build`: Builds the project and uploads the artifacts
-- `lint`: Runs linting checks
-- `test`: Runs the test suite
+- `setup`: Sets up the environment and Firebase credentials
+- `lint`: Runs formatting and linting checks (depends on setup)
+- `build`: Builds the package and uploads artifacts (depends on setup)
+- `test`: Runs tests after lint and build succeed (depends on lint and build)
 
 **Usage:**
-You can manually trigger this workflow from the Actions tab in the GitHub repository if needed.
+This workflow automatically runs on pushes and pull requests. You can see the status badge in the README.md file.
 
-### 3. Comprehensive Check (comprehensive-check.yml)
+### 2. Comprehensive Check (comprehensive-check.yml)
 
 An extensive verification workflow that includes all checks for code quality, including a dry run of the publishing process.
 
@@ -49,7 +36,7 @@ An extensive verification workflow that includes all checks for code quality, in
 **Usage:**
 This workflow is particularly useful before merging a PR into master. It ensures the code is ready for production.
 
-### 4. Node.js Compatibility (node-compatibility.yml)
+### 3. Node.js Compatibility (node-compatibility.yml)
 
 Tests the package on different Node.js versions to ensure compatibility.
 
@@ -63,18 +50,18 @@ Tests the package on different Node.js versions to ensure compatibility.
 **Usage:**
 This workflow runs automatically once a week but can also be triggered manually if needed.
 
-### 5. CI Status Badges (badges.yml)
+### 4. Status Badges (badges.yml)
 
-Updates status badges for the repository.
+Updates status badges for the repository based on the main workflow results.
 
 **Triggers:**
-- Push to master branch
+- When the Main CI Workflow completes on the master branch
 
 **Jobs:**
-- `update-badges`: Generates and updates the status badges
+- `update-badges`: Dynamically generates status badges based on build results
 
 **Usage:**
-This workflow runs automatically on every push to master and updates the badges that are displayed in the README.md file.
+This workflow runs automatically after the main workflow completes on the master branch and updates the badges that are displayed in the README.md file.
 
 ## Using the Workflows
 
